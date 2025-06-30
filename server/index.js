@@ -1,15 +1,38 @@
 // Packages
 const express = require('express');
 const path = require('path');
+const os = require('os');
+const networkInterfaces = os.networkInterfaces();
+const https = require('https');
+const http = require('http');
 
-// Setup express application
+// - Setup express application -
 const app = express();
 app.use(express.static(path.join(__dirname, '../client')));
 
-// Setup HTTP server and WebSocket Server
-PORT = 3000;
-const server = app.listen(PORT, () => {
-	console.log(`Server running on http://localhost:${PORT}`);
-});
+// // - Set up server -
+// const sslOptions = {
+// 	key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
+// 	cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.cert')),
+// };
 
-// Web socket stuff to send and receive
+const getLocalExternalIP = () => {
+	for (const iface of Object.values(networkInterfaces)) {
+		for (const ifaceInfo of iface) {
+			if (ifaceInfo.family === 'IPv4' && !ifaceInfo.internal) {
+				return ifaceInfo.address;
+			}
+		}
+	}
+	return 'localhost';
+};
+
+// Create HTTPS server
+const PORT = process.env.PORT || 3000;
+const server = http.createServer(app);
+
+// Start server
+const LOCAL_IP = getLocalExternalIP();
+server.listen(PORT, '0.0.0.0', () => {
+	console.log(`Server running at: http://${LOCAL_IP}:${PORT}`);
+});
