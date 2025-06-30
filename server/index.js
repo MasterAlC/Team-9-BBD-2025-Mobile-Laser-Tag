@@ -10,12 +10,6 @@ const http = require('http');
 const app = express();
 app.use(express.static(path.join(__dirname, '../client')));
 
-// // - Set up server -
-// const sslOptions = {
-// 	key: fs.readFileSync(path.join(__dirname, 'ssl', 'server.key')),
-// 	cert: fs.readFileSync(path.join(__dirname, 'ssl', 'server.cert')),
-// };
-
 const getLocalExternalIP = () => {
 	for (const iface of Object.values(networkInterfaces)) {
 		for (const ifaceInfo of iface) {
