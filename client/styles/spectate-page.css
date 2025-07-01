@@ -1,0 +1,200 @@
+/* styles/spectate-page.css - Styles SPECIFIC to the Spectate Page */
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 60px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Leave Button Styling */
+.leave-btn {
+    background-color: #8b0000;
+    border-color: #ff4500;
+    box-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500, 0 0 30px #ff4500;
+}
+
+.leave-btn:hover {
+    background-color: #ff4500;
+    border-color: #8b0000;
+    box-shadow: 0 0 15px #ff4500, 0 0 30px #ff4500, 0 0 45px #ff4500;
+}
+
+.leave-btn::before {
+    border: 2px solid #ff4500;
+}
+
+.leave-btn:hover::before {
+    box-shadow: 0 0 10px #ff4500, 0 0 20px #ff4500;
+}
+
+/* Main Container */
+.spectate-container {
+    background-color: rgba(15, 12, 41, 0.8);
+    border: 2px solid #00ffff;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.7), 0 0 30px rgba(0, 255, 255, 0.5);
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    min-height: auto;
+}
+
+/* Ribbon Header */
+.lobby-number {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 255, 255, 0.8);
+    color: #0f0c29;
+    padding: 0.5rem 0;
+    text-align: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1.5rem;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.9);
+    z-index: 30;
+    border-bottom: 3px solid #00ffff;
+}
+
+/* Tables */
+.game-info-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed;
+}
+
+.game-info-table th, .game-info-table td {
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    padding: 0.75rem;
+    text-align: left;
+    color: #e0f7fa;
+    word-wrap: break-word;
+    word-break: break-word;
+}
+
+.game-info-table th {
+    background-color: rgba(0, 255, 255, 0.2);
+    color: #00ffff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 0.9rem;
+}
+
+.game-info-table tr:nth-child(even) {
+    background-color: rgba(0, 255, 255, 0.05);
+}
+
+.game-info-table tr:hover {
+    background-color: rgba(0, 255, 255, 0.1);
+}
+
+/* Scrollable Table */
+.scrollable-box {
+    max-height: 250px;
+    overflow-y: auto;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(0, 255, 255, 0.2);
+    border-radius: 0.5rem;
+}
+
+/* Team Panels */
+.red-team-panel {
+    background-color: rgba(139, 0, 0, 0.3);
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7), 0 0 30px rgba(255, 0, 0, 0.5);
+}
+
+.blue-team-panel {
+    background-color: rgba(0, 0, 139, 0.3);
+    border: 2px solid #0000ff;
+    box-shadow: 0 0 15px rgba(0, 0, 255, 0.7), 0 0 30px rgba(0, 0, 255, 0.5);
+}
+
+/* Message Box */
+#messageBox {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(50, 43, 99, 0.95);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 0 20px rgba(255, 0, 255, 0.7);
+    border: 2px solid #ff00ff;
+    z-index: 50;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+}
+
+#messageBox.hidden {
+    display: none;
+}
+
+#messageBox button {
+    background-color: #00ffff;
+    color: #0f0c29;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    width: 100%;
+    transition: background-color 0.2s ease-in-out;
+}
+
+#messageBox button:hover {
+    background-color: #00e6e6;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+    .game-info-table th, .game-info-table td {
+        font-size: 0.75rem;
+        padding: 0.5rem;
+    }
+
+    .lobby-number {
+        font-size: 1.2rem;
+        padding: 0.4rem 0;
+    }
+
+    body {
+        padding-top: 50px;
+    }
+
+    .spectate-container {
+        padding: 1.5rem;
+    }
+
+    .scrollable-box {
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .retro-heading {
+        font-size: 1.5rem;
+    }
+
+    .lobby-number {
+        font-size: 1rem;
+        padding: 0.3rem 0;
+    }
+
+    body {
+        padding-top: 40px;
+    }
+
+    .spectate-container {
+        padding: 1rem;
+    }
+
+    .scrollable-box {
+        max-height: 180px;
+    }
+}
