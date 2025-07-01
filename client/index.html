@@ -100,49 +100,57 @@
     <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
   </div>
 
-  <!-- Player View -->
-<div id="playerViewScreen" class="hidden flex flex-col items-center w-screen h-screen px-2 pt-2 pb-0 bg-black text-white relative overflow-hidden">
+  <!-- Player View (FINAL RESPONSIVE FIX) -->
+<div id="playerViewScreen" class="hidden flex flex-col items-center w-screen h-screen p-2 bg-black text-white relative overflow-hidden">
 
-    <div class="w-full max-w-sm sm:max-w-md flex justify-between items-center px-4 py-1 sm:px-6 sm:py-2 rounded-xl shadow-lg border border-purple-700 mx-auto mt-0 mb-2"
+    <!-- TOP HEADER: Sits at the top, does not shrink -->
+    <div class="w-full max-w-sm sm:max-w-md flex justify-between items-center px-4 py-1 sm:px-6 sm:py-2 rounded-xl shadow-lg border border-purple-700 mx-auto mb-2 flex-shrink-0"
          style="background-color: rgba(36, 36, 62, 0.9); box-shadow: 0 0 10px rgba(128, 0, 128, 0.7);">
         <div class="text-lg sm:text-xl md:text-2xl text-red-500 font-bold retro-heading" style="text-shadow: 0 0 6px red, 0 0 10px red;">RED: 0</div>
         <div class="text-base sm:text-lg md:text-xl text-yellow-400 font-bold px-1 sm:px-2 py-1 rounded retro-heading" style="text-shadow: 0 0 6px yellow, 0 0 10px yellow;" id="playerStatusLabel">Time Left: 00:30</div>
         <div class="text-lg sm:text-xl md:text-2xl text-blue-500 font-bold retro-heading" style="text-shadow: 0 0 6px blue, 0 0 10px blue;">BLUE: 0</div>
     </div>
+    
+    <!-- MAIN CONTENT WRAPPER: Takes all remaining space and manages internal layout -->
+    <div class="w-full flex-grow flex flex-col landscape:md:flex-row landscape:md:items-stretch items-center justify-center gap-2 landscape:md:gap-8 overflow-hidden">
 
-    <div class="relative w-full max-w-[80vw] sm:max-w-xs md:max-w-sm lg:max-w-md rounded-lg overflow-hidden shadow-xl flex items-center justify-center border-2 border-cyan-400 mx-auto mt-0 mb-2"
-         style="padding-bottom: 100%; /* 1:1 Aspect Ratio  */ background-color: rgba(0, 0, 0, 0.8); box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);">
-        <video id="video" autoplay playsinline muted class="absolute top-0 left-0 w-full h-full object-cover"></video>
-        <div id="crosshair" class="pointer-events-none w-16 h-16 sm:w-20 sm:h-20" style="border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);">
-            <div class="w-4 h-4 bg-white rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+        <!-- VIDEO CONTAINER: Fills available space -->
+        <div class="relative w-full max-w-lg aspect-square landscape:md:aspect-auto landscape:md:w-1/2 landscape:md:h-full rounded-lg overflow-hidden shadow-xl flex items-center justify-center border-2 border-cyan-400 mx-auto flex-grow landscape:md:flex-grow-0 min-h-0"
+             style="background-color: rgba(0, 0, 0, 0.8); box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);">
+            <video id="video" autoplay playsinline muted class="absolute top-0 left-0 w-full h-full object-cover"></video>
+            <div id="crosshair" class="pointer-events-none w-16 h-16 sm:w-20 sm:h-20" style="border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);">
+                <div class="w-4 h-4 bg-white rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+            </div>
+            <div id="result" class="retro-heading hidden text-white text-3xl sm:text-4xl" style="text-shadow: 0 0 10px white, 0 0 20px white;"></div>
         </div>
-        <div id="result" class="retro-heading hidden text-white text-3xl sm:text-4xl" style="text-shadow: 0 0 10px white, 0 0 20px white;"></div>
+
+        <!-- CONTROLS CONTAINER: Sits at the bottom in portrait, side in landscape -->
+        <div class="flex flex-col items-center justify-center gap-2 p-2 flex-shrink-0 landscape:md:w-1/2">
+            <button id="shootButton" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full relative overflow-hidden transform hover:scale-105 transition-all duration-300 btn"
+                    style="background-color: #ff0000; border: 5px solid #ffffff; box-shadow: 0 0 15px #fe3d3d, 0 0 25px #ff5959; text-shadow: 0 0 6px #fff; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                SHOOT
+            </button>
+
+            <div class="flex flex-col items-center text-center">
+                <p id="callActionMessage" class="retro-heading text-lg sm:text-xl text-white mb-1" style="text-shadow: 0 0 8px white;">You shot BLUE</p>
+                <p id="teamNameLabel" class="retro-heading text-xl sm:text-2xl font-bold" style="text-shadow: 0 0 8px rgb(255, 255, 255); color: rgb(255, 255, 255);">Your Team: RED</p>
+            </div>
+        </div>
     </div>
 
-    <button id="shootButton" class="w-24 h-24 sm:w-32 sm:h-32 rounded-full relative overflow-hidden transform hover:scale-105 transition-all duration-300 mb-2 btn"
-            style="background-color: #ff0000; border: 5px solid #ffffff; box-shadow: 0 0 15px #fe3d3d, 0 0 25px #ff5959; text-shadow: 0 0 6px #fff; display: flex; align-items: center; justify-content: center; font-size: 1rem;">
-        SHOOT
-    </button>
-
-    <div class="flex flex-col items-center mb-0">
-        <p id="callActionMessage" class="retro-heading text-lg sm:text-xl text-white mb-1" style="text-shadow: 0 0 8px white;">You shot BLUE</p>
-        <p id="teamNameLabel" class="retro-heading text-xl sm:text-2xl font-bold" style="text-shadow: 0 0 8px rgb(255, 255, 255); color: rgb(255, 255, 255);">Your Team: RED</p>
-    </div>
-
+    <!-- LEAVE BUTTON: Fixed, outside the layout flow -->
     <button id="leaveGamePlayerBtn" class="fixed bottom-2 right-2 btn text-sm sm:text-base font-bold py-2 px-4 rounded-lg hidden"
         style="background-color: #a00; border-color: #f00; box-shadow: 0 0 8px #f00, 0 0 15px #f00;">
     Leave
     </button>
 </div>
 
+
   <!-- SPECTATOR SCREEN (FIXED) -->
-  <!-- MODIFIED: Changed justify-center to justify-start and added padding-top (pt-[...]) to make space for the fixed lobby banner -->
   <div id="spectatorViewScreen" class="hidden flex flex-col items-center justify-start min-h-screen w-full p-4 pt-[70px] sm:pt-[80px]">
 
-    <!-- The lobby number is now fixed to the top of the viewport via CSS -->
     <div class="lobby-number" id="lobbyNumber">Lobby: 12345</div>
 
-    <!-- The container will now scroll internally if content overflows -->
     <div class="spectate-container rounded-xl p-4 sm:p-8 shadow-lg max-w-5xl w-full text-center relative z-10">
         <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-6 text-cyan-400">
             Spectating Game
@@ -194,7 +202,6 @@
             Leave Game
         </button>
 
-        <!-- NOTE: This is a duplicate ID. Consider making IDs unique. -->
         <div id="messageBox" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-6 rounded-lg shadow-xl border-2 border-red-500 z-50 hidden" style="width: 80%; max-width: 400px;">
             <p id="messageText" class="text-center text-lg mb-4"></p>
             <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
