@@ -27,6 +27,37 @@ const getLocalExternalIP = () => {
   return 'localhost';
 };
 
+const Game = require('./Game');
+const activeGames = {};
+
+function createGame(gameId) {
+  if (!activeGames[gameId]) {
+    activeGames[gameId] = new Game(gameId);
+  }
+  return activeGames[gameId];
+}
+
+const addPlayer = (gameId, playerId, socket) => {
+  const game = createGame(gameId);
+  game.addPlayer(playerId, socket);
+};
+
+const startGame = (gameId) => {
+  const game = activeGames[gameId];
+  if (game) game.startGame();
+};
+
+const playerHitEventHandler = (gameId, shooterId, targetId) => {
+  const game = activeGames[gameId];
+  if (game) game.playerHitEventHandler(shooterId, targetId);
+};
+
+module.exports = {
+  addPlayer,
+  startGame,
+  playerHitEventHandler
+};
+
 // Create HTTPS server
 const PORT = process.env.PORT || 3000;
 const server = https.createServer(options, app);
