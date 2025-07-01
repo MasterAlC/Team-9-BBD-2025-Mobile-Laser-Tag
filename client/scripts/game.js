@@ -15,7 +15,13 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen, spectatorViewScreen]
 
-    let socket;
+    // Initialize WebSocket connection
+    const url = window.location
+    console.log(url.host);
+
+    const socket = new WebSocket(`wss://${url.host}`);
+    
+    // Intialise username and game ID variables
     let currentGameId = null;
     let playerName = null;
 
