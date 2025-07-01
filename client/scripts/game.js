@@ -41,8 +41,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mock behavior for testing
         const fakeGameId = Math.random().toString(36).substr(2, 6).toUpperCase();
         createdGameCode.textContent = fakeGameId;
-        currentGameId = fakeGameId;
-        showScreen(createGameScreen);*/
+        currentGameId = fakeGameId;*/
+        showScreen(createGameScreen);
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', () => {
     continueBtn.addEventListener('click', () => {
     const name = usernameInput.value.trim();
     if (!name) {
-        showMessage("Please enter your name!");
+        showMessage("Please enter your username!");
         return;
     }
 

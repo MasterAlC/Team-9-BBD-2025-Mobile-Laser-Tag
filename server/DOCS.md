@@ -7,8 +7,8 @@
 **constructor(id, socket)**  
 **Description:** Creates a new player with a unique ID and Socket  
 **Parameters:**  
-    - id (string) -> Unique ID for the player  
-    - socket (WebSocket) -> The player's WebSocket connection  
+ - id (string) -> Unique ID for the player  
+ - socket (WebSocket) -> The player's WebSocket connection  
 **Returns:** A new Player instance  
 
 **updateScore(points)**  
