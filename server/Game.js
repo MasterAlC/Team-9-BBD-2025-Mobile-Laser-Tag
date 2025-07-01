@@ -1,7 +1,6 @@
 const Player = require('./Player');
-
 class Game {
-    constructor(gameId) {
+    constructor(gameId, spectator) {
         this.gameId = gameId;
         this.players = {};
         this.GAME_DURATION = 60; 
