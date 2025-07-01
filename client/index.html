@@ -1,55 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Mobile Lazer Tag</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mobile Lazer Tag</title>
 
     <!-- Tailwind CSS CDN (okay for development, not production) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
     <!-- External Stylesheet -->
-    <link rel="stylesheet" href="styles/styles.css" />
+  <link rel="stylesheet" href="styles/styles.css" />
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
 
     <!-- Main Client Application Script -->
-     <script type="module" src="scripts/app.js" defer></script>
-     <script type="module" src="scripts/cameraDetection.js" defer></script>
+  <script type="module" src="scripts/game.js"></script>
+  <script type="module" src="scripts/utilities.js"></script>
+
+  <!-- Prototype camera detection application code -->
+  <script type="module" src="scripts/cameraDetection.js"></script>
+
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 bg-black text-white">
 
-    <!-- Main container -->
-    <div id = "home-screen" class="screen active container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center relative z-10 border border-purple-500">
-        <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-8 text-cyan-400">
-            Mobile Lazer Tag
-        </h1>
+  <!-- HOME SCREEN -->
+  <div id="homeScreen" class="container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+    <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-8 text-cyan-400">
+      Mobile Lazer Tag
+    </h1>
 
-        <!-- Buttons -->
-        <button id="playButton" class="btn text-xl sm:text-2xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs transition transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-600 bg-purple-700">
-            Play Game
-        </button>
+    <button id="playButton" class="btn text-xl sm:text-2xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs">
+      Play Prototype
+    </button>
 
-        <button id="spectateButton" class="btn text-xl sm:text-2xl font-bold py-3 px-6 rounded-lg w-full max-w-xs transition transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-purple-600 bg-indigo-700">
-            Spectate
-        </button>
+    <button id="createGameBtn" class="btn text-xl sm:text-2xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs">
+      Create Game
+    </button>
+
+    <button id="joinGameBtn" class="btn text-xl sm:text-2xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
+      Join Game
+    </button>
+  </div>
+
+  <!-- CREATE GAME SCREEN -->
+<div id="createGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Game Created!</h2>
+    <p class="text-lg mb-6">Share this code with your friends:</p>
+    <p id="createdGameCode" class="text-2xl font-bold text-yellow-400 mb-8"></p>
+    
+    <button id="startGameBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs mb-4">
+      Start Game
+    </button>
+
+    <button id="backToHomeFromCreateBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
+      Back to Home
+    </button>
+</div>
+
+  <!-- JOIN GAME SCREEN -->
+<div id="joinGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500"">
+    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Join a Game</h2>
+    <input type="text" id="joinGameCodeInput" placeholder="Enter Game Code" class="w-full mb-6 py-3 px-4 text-black text-lg rounded-lg border border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-600" />
+    <button id="joinAsPlayerBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs">Play</button>
+    <button id="joinAsSpectatorBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700 bg-indigo-700 mb-4">Spectate</button>
+    
+    <button id="backToHomeFromJoinBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
+      Back to Home
+    </button>
+</div>
+
+  <!-- WAITING ROOM SCREEN -->
+  <div id="waitingRoomScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Waiting Room</h2>
+    <p class="mb-4">Game Code:</p>
+    <p id="waitingRoomGameId" class="text-2xl font-bold text-yellow-400 mb-6"></p>
+    <ul id="playerList" class="text-lg space-y-2"></ul>
+    <p id="waitingMessage" class="mt-6 text-green-400"></p>
+  </div>
+
+  <!-- Message Box -->
+  <div id="messageBox" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-6 rounded-lg shadow-xl border-2 border-red-500 z-50 hidden" style="width: 80%; max-width: 400px;">
+    <p id="messageText" class="text-center text-lg mb-4"></p>
+    <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
+  </div>
+
+  <!-- Player View -->
+  <div id="playerViewScreen" class="hidden">
+    <video id="video" autoplay playsinline muted></video>
+    <div id="player-ui">
+        <div id="crosshair"></div>
+        <div id="result">Detecting...</div>
     </div>
+  </div>
 
-    <!-- Message Box -->
-    <div id="messageBox" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-6 rounded-lg shadow-xl border-2 border-red-500 z-50 hidden" style="width: 80%; max-width: 400px;">
-        <p id="messageText" class="text-center text-lg mb-4"></p>
-        <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
-    </div>
-
-    <!-- Player View -->
-     <div id="player-view" class="screen">
-        <video id="video" autoplay playsinline muted></video>
-        <!-- <canvas id="canvas"></canvas> -->
-        <div id="player-ui">
-            <div id="crosshair"></div>
-            <div id="result">Detecting...</div>
-        </div>
-     </div>
 </body>
 </html>

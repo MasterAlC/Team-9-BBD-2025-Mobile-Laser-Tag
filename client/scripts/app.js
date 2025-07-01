@@ -3,17 +3,15 @@ import {initCameraDetection} from './cameraDetection.js'
 console.log("Starting client application")
 
 const playButton = document.getElementById('playButton')
-const spectateButton = document.getElementById('spectateButton')
-const closeMessageBoxButton = document.getElementById('closeMessageBox')
 const resultLabel = document.getElementById('result')
 
-function showScreen(screenId) {
+function protoShowScreen(screenId) {
     document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'))
     document.getElementById(screenId).classList.add('active')
 }
 
 function startGame() {
-    showScreen('player-view')
+    protoShowScreen('player-view')
     console.log("Starting Game...")
     if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
         console.log("Browser supports camera media access")
@@ -38,5 +36,3 @@ function hideMessageBox() {
 
 // Set up buttons and event listeneners
 playButton.addEventListener('click', startGame)
-spectateButton.addEventListener('click', spectateGame)
-closeMessageBoxButton.addEventListener('click', hideMessageBox)
