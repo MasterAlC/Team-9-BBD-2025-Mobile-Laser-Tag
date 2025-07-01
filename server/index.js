@@ -38,8 +38,13 @@ function createGame(gameId) {
 }
 
 const addPlayer = (gameId, playerId, socket) => {
-  const game = createGame(gameId);
+  const game = activeGames[gameId];
+  if (!game) {
+    console.error(`Game with ID ${gameId} does not exist.`);
+    return;
+  }
   game.addPlayer(playerId, socket);
+  console.log(`Player ${playerId} added to game ${gameId}.`);
 };
 
 const startGame = (gameId) => {
@@ -161,9 +166,41 @@ ws.on('connection', (socket) => {
                     gameId: gameId,
                     message: 'Game created successfully!'
                   }));  
+
+                // Add player to the game
+                addPlayer(gameId, socket.id, socket);
             case 'player_join':
                 // Handle player joined event
-                console.log(`Player joined: ${data.username}`);
+                console.log(`Received request from: ${data.username} to join ${data.gameId}`);
+
+                // Check if gameId is provided
+                if (data.gameId) {
+                  if (activeGames[data.gameId]) {      
+                      // Add player to the game (assuming gameId exists in the availale games)
+                      console.log(`Adding player ${data.username} to game ${data.gameId}`);
+                      // Add player to the game
+                      addPlayer(data.gameId, socket.id, socket);
+                      socket.send(JSON.stringify({
+                          type: 'JOIN_CONFIRMED',
+                          gameId: data.gameId,
+                          message: 'You have joined the game!'
+                      }));
+                    }
+                    else {
+                        socket.send(JSON.stringify({
+                            type: 'error',
+                            message: `Game with ID ${data.gameId} does not exist.`
+                        }));
+                        console.log(`Game with ID ${data.gameId} does not exist.`);
+                    }
+                } else {
+                    console.log('Game ID not provided.');
+                    socket.send(JSON.stringify({
+                        type: 'error',
+                        message: 'Game ID is required to join a game.'
+                    }));
+                }
+
                 break;
             case 'player_left':
                 // Handle player left event

@@ -50,8 +50,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (data.type === 'JOIN_CONFIRMED') {
+                console.log(`Received confirmation to join game ${data.gameId}`)
                 currentGameId = data.gameId;
-                waitingRoomGameId.textContent = currentGameId;
+                waitingRoomGameId.textContent = "Joined Game: " + currentGameId + " (Waiting for host to start...)";
                 showScreen(waitingRoomScreen);
             }
 
@@ -106,31 +107,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // socket = new WebSocket('ws://localhost:3000');
-
-        // socket.onopen = () => {
-        //     socket.send(JSON.stringify({
-        //         type: 'JOIN_GAME',
-        //         gameId: code,
-        //         role: role
-        //     }));
-        // };
-
         if (role == 'SPECTATOR') {
-            showScreen(spectatorViewScreen)
+            // Send a message to the server to join as a spectator
+            socket.send(JSON.stringify({
+                type: 'player_join',
+                username: playerName,
+                gameId: code,
+                role: 'spectator'
+            }));
         }
-        else {
-            showScreen(waitingRoomScreen);
+        else if (role == 'PLAYER'){
+            // Send a message to the server to join as a player
+            socket.send(JSON.stringify({
+                type: 'player_join',
+                username: playerName,
+                gameId: code,
+                role: 'player'
+            }));
         }
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
-
-            if (data.type === 'JOIN_CONFIRMED') {
-                currentGameId = data.gameId;
-                waitingRoomGameId.textContent = currentGameId;
-            }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
                 playerList.innerHTML = '';
