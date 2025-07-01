@@ -1,4 +1,9 @@
 
+function shoot(colour) {
+  // This function communicates the shoot operation to the server.
+  console.log("Sending shoot signal to server. Detected color:", colour);
+}
+
 function initCameraDetection() {
     const REGION_SIZE = 100;
     const COLOUR_THRESHOLD = 150;
@@ -7,6 +12,7 @@ function initCameraDetection() {
     // Select video, canvas, and result elements
     const video = document.getElementById('video');
     const resultDiv = document.getElementById('result');
+    const shootButton = document.getElementById('shootButton');
 
     // Create hidden canvas
     const canvas = document.createElement('canvas');
@@ -49,19 +55,29 @@ function initCameraDetection() {
         }
 
         if (redCount > blueCount && redCount > PIXEL_COUNT_THRESHOLD) {
-          resultDiv.innerText = '🔴 Red object in center';
+          resultDiv.innerText = '🔴 Shot red';
+          return "RED"
         } else if (blueCount > redCount && blueCount > PIXEL_COUNT_THRESHOLD) {
-          resultDiv.innerText = '🔵 Blue object in center';
+          resultDiv.innerText = '🔵 Shot blue';
+          return "BLUE"
         } else {
-          resultDiv.innerText = '⚪️ Center is unclear';
+          resultDiv.innerText = 'Blank shot';
+          return "BLANK"
         }
 
-        requestAnimationFrame(detectColor)
+        //requestAnimationFrame(detectColor)
     }
 
-    video.addEventListener('play', () => {
-        requestAnimationFrame(detectColor);
+    // video.addEventListener('play', () => {
+    //     requestAnimationFrame(detectColor);
+    // });
+    shootButton.addEventListener('click', () => {
+      console.log('Shoot button pressed!'); 
+      let colour = detectColor();
+      shoot(colour) 
     });
 }
+
+  
 
 export {initCameraDetection};
