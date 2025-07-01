@@ -146,6 +146,21 @@ ws.on('connection', (socket) => {
                 console.log(`Player logged in: ${data.username}`);
                 socket.username = data.username || 'anonymous';
                 break;
+            case 'create_game':
+                // Handle create game event
+                const gameId = uuidv4().slice(0, 6).toUpperCase(); // Generate a random game ID
+                console.log(`Game created with ID: ${gameId}`);
+                const game = createGame(gameId);
+                game.addPlayer(socket.id, socket);
+                
+                // TODO: Player should be made the host of the game
+
+                // Send game created event to the client
+                socket.send(JSON.stringify({
+                    type: 'game_created',
+                    gameId: gameId,
+                    message: 'Game created successfully!'
+                  }));  
             case 'player_join':
                 // Handle player joined event
                 console.log(`Player joined: ${data.username}`);

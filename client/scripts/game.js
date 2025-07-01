@@ -1,6 +1,7 @@
 import { initCameraDetection } from "./cameraDetection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
+    let isHost = false;
     const homeScreen = document.getElementById('homeScreen');
     const createGameScreen = document.getElementById('createGameScreen');
     const joinGameScreen = document.getElementById('joinGameScreen');
@@ -34,27 +35,15 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     document.getElementById('createGameBtn').addEventListener('click', () => {
-        socket = new WebSocket('ws://localhost:3000');
-
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                type: 'CREATE_GAME',
-                playerName: playerName 
-            }));
-        };
-
-    /*document.getElementById('createGameBtn').addEventListener('click', () => {
-        // Mock behavior for testing
-        const fakeGameId = Math.random().toString(36).substr(2, 6).toUpperCase();
-        createdGameCode.textContent = fakeGameId;
-        currentGameId = fakeGameId;
-        showScreen(createGameScreen);*/
+        isHost = true;
+        socket.send(JSON.stringify({
+            type: 'create_game'}));
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
 
-            if (data.type === 'GAME_CREATED') {
+            if (data.type === 'game_created') {
                 currentGameId = data.gameId;
                 createdGameCode.textContent = data.gameId;
                 showScreen(createGameScreen);
