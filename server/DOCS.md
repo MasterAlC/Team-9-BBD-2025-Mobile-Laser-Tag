@@ -116,7 +116,7 @@
 - **Parameters:**  
     - gameId (string): The game room ID  
     - role (string): Either "player" or "spectator"  
-- **Returns:** Confirmation and updated player list  
+- **Returns:** (join_confirmed)Confirmation and updated player list  
 
 **leave**  
 - **Description:** Removes a player from a game room and updates the list with a "left" flag.  
