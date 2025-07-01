@@ -117,3 +117,5 @@ document.addEventListener('DOMContentLoaded', () => {
         // e.g., window.location.href = '/home'; or a router push.
     });
 });
+
+export {updateTime, updateScores, updateLobby};

@@ -1,3 +1,5 @@
+import { updateTime, updateLobby, updateScores } from "./spectate-script.js";
+
 // --- Global State for Test Simulation ---
 let currentTestTime = 0;
 let currentTestPlayers = [];

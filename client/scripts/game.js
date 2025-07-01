@@ -6,7 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinGameScreen = document.getElementById('joinGameScreen');
     const waitingRoomScreen = document.getElementById('waitingRoomScreen');
     const playerViewScreen = document.getElementById('playerViewScreen')
-    const screens = [homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen]
+    const spectatorViewScreen = document.getElementById('spectatorViewScreen')
+    const screens = [homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen, spectatorViewScreen]
 
     let socket;
     let currentGameId = null;
@@ -90,15 +91,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        socket = new WebSocket('ws://localhost:3000');
+        // socket = new WebSocket('ws://localhost:3000');
 
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                type: 'JOIN_GAME',
-                gameId: code,
-                role: role
-            }));
-        };
+        // socket.onopen = () => {
+        //     socket.send(JSON.stringify({
+        //         type: 'JOIN_GAME',
+        //         gameId: code,
+        //         role: role
+        //     }));
+        // };
+
+        if (role == 'SPECTATOR') {
+            showScreen(spectatorViewScreen)
+        }
+        else {
+            showScreen(waitingRoomScreen);
+        }
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
@@ -107,7 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.type === 'JOIN_CONFIRMED') {
                 currentGameId = data.gameId;
                 waitingRoomGameId.textContent = currentGameId;
-                showScreen(waitingRoomScreen);
             }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
