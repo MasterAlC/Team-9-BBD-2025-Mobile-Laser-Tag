@@ -13,11 +13,15 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+
+    <!-- Main Client Application Script -->
+     <script type="module" src="scripts/app.js" defer></script>
+     <script type="module" src="scripts/cameraDetection.js" defer></script>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 bg-black text-white">
 
     <!-- Main container -->
-    <div class="container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center relative z-10 border border-purple-500">
+    <div id = "home-screen" class="screen active container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center relative z-10 border border-purple-500">
         <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-8 text-cyan-400">
             Mobile Lazer Tag
         </h1>
@@ -38,18 +42,14 @@
         <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
     </div>
 
-    <!-- Scripts -->
-    <script src="scripts/utilities.js"></script>
-    <script src="scripts/play.js"></script>
-    <script src="scripts/spectate.js"></script>
-
-    <!-- Attach event listeners -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('closeMessageBox').addEventListener('click', hideMessageBox);
-            document.getElementById('playButton').addEventListener('click', playGame);
-            document.getElementById('spectateButton').addEventListener('click', spectateGame);
-        });
-    </script>
+    <!-- Player View -->
+     <div id="player-view" class="screen">
+        <video id="video" autoplay playsinline muted></video>
+        <!-- <canvas id="canvas"></canvas> -->
+        <div id="player-ui">
+            <div id="crosshair"></div>
+            <div id="result">Detecting...</div>
+        </div>
+     </div>
 </body>
 </html>
