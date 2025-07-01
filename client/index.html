@@ -135,11 +135,15 @@
     </button>
 </div>
 
-  <!-- SPECTATOR SCREEN -->
-  <div id="spectatorViewScreen" class="hidden flex flex-col items-center justify-center min-h-screen p-4">
-        <div class="lobby-number" id="lobbyNumber">Lobby: 12345</div>
+  <!-- SPECTATOR SCREEN (FIXED) -->
+  <!-- MODIFIED: Changed justify-center to justify-start and added padding-top (pt-[...]) to make space for the fixed lobby banner -->
+  <div id="spectatorViewScreen" class="hidden flex flex-col items-center justify-start min-h-screen w-full p-4 pt-[70px] sm:pt-[80px]">
 
-    <div class="spectate-container rounded-xl p-8 shadow-lg max-w-4xl w-full text-center relative z-10">
+    <!-- The lobby number is now fixed to the top of the viewport via CSS -->
+    <div class="lobby-number" id="lobbyNumber">Lobby: 12345</div>
+
+    <!-- The container will now scroll internally if content overflows -->
+    <div class="spectate-container rounded-xl p-4 sm:p-8 shadow-lg max-w-5xl w-full text-center relative z-10">
         <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-6 text-cyan-400">
             Spectating Game
         </h1>
@@ -190,7 +194,8 @@
             Leave Game
         </button>
 
-        <div id="messageBox" class="fixed top-1/2 left-50% transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-6 rounded-lg shadow-xl border-2 border-red-500 z-50 hidden" style="width: 80%; max-width: 400px;">
+        <!-- NOTE: This is a duplicate ID. Consider making IDs unique. -->
+        <div id="messageBox" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-gray-800 text-white p-6 rounded-lg shadow-xl border-2 border-red-500 z-50 hidden" style="width: 80%; max-width: 400px;">
             <p id="messageText" class="text-center text-lg mb-4"></p>
             <button id="closeMessageBox" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
         </div>

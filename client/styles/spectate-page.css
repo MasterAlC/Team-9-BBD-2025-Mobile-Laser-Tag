@@ -4,8 +4,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    padding-top: 60px;
+    /* MODIFIED: Changed from justify-center to flex-start to prevent vertical centering issues with tall content */
+    justify-content: flex-start; 
+    /* MODIFIED: The padding is now handled by container classes in index.html, but kept for standalone spectate.html */
+    padding-top: 70px;
     overflow-x: hidden;
     overflow-y: auto;
 }
@@ -41,12 +43,17 @@ body {
     padding: 2rem;
     width: 100%;
     max-width: 1200px;
-    min-height: auto;
+    
+    /* MODIFIED: Limit the container's height and make IT scrollable. */
+    /* This is the key fix for the leave button getting pushed off-screen. */
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 /* Ribbon Header */
 .lobby-number {
-    position: absolute;
+    /* MODIFIED: Changed to 'fixed' to lock it to the top of the viewport. */
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
@@ -92,7 +99,7 @@ body {
     background-color: rgba(0, 255, 255, 0.1);
 }
 
-/* Scrollable Table */
+/* Scrollable Table Box - This still works fine */
 .scrollable-box {
     max-height: 250px;
     overflow-y: auto;
@@ -164,7 +171,8 @@ body {
     }
 
     body {
-        padding-top: 50px;
+        /* Adjust padding for smaller banner */
+        padding-top: 60px;
     }
 
     .spectate-container {
@@ -187,7 +195,8 @@ body {
     }
 
     body {
-        padding-top: 40px;
+        /* Adjust padding for smallest banner */
+        padding-top: 50px;
     }
 
     .spectate-container {
@@ -196,5 +205,15 @@ body {
 
     .scrollable-box {
         max-height: 180px;
+    }
+}
+
+/* NEW: Media query for larger screens like laptops to improve font readability */
+@media (min-width: 1024px) {
+    .game-info-table th {
+        font-size: 0.8rem; /* Slightly smaller for more compact header */
+    }
+    .game-info-table td {
+        font-size: 0.95rem; /* Ensure text is readable */
     }
 }
