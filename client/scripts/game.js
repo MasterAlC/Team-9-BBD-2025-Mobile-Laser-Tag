@@ -202,14 +202,20 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     continueBtn.addEventListener('click', () => {
-    const name = usernameInput.value.trim();
-    if (!name) {
-        showMessage("Please enter your name!");
-        return;
-    }
+        const name = usernameInput.value.trim();
+        if (!name) {
+            showMessage("Please enter your name!");
+            return;
+        }
 
-    playerName = name;
-    showScreen(homeScreen);
+        playerName = name;
+        socket.send(JSON.stringify({
+            type: 'login',
+            username: playerName
+        }));
+
+        showScreen(homeScreen);
+
     });
 
 });
