@@ -6,12 +6,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinGameScreen = document.getElementById('joinGameScreen');
     const waitingRoomScreen = document.getElementById('waitingRoomScreen');
     const playerViewScreen = document.getElementById('playerViewScreen')
+    const spectatorViewScreen = document.getElementById('spectatorViewScreen')
+
     const usernameScreen = document.getElementById('usernameScreen');
     const usernameInput = document.getElementById('usernameInput');
     const continueBtn = document.getElementById('continueBtn');
     const hostPlayerList = document.getElementById('hostPlayerList');
-   
-    const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen]
+  
+    const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen, spectatorViewScreen]
 
     let socket;
     let currentGameId = null;
@@ -109,16 +111,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        socket = new WebSocket('ws://localhost:3000');
+        // socket = new WebSocket('ws://localhost:3000');
 
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                type: 'JOIN_GAME',
-                gameId: code,
-                role: role,
-                playerName: playerName
-            }));
-        };
+        // socket.onopen = () => {
+        //     socket.send(JSON.stringify({
+        //         type: 'JOIN_GAME',
+        //         gameId: code,
+        //         role: role
+        //     }));
+        // };
+
+        if (role == 'SPECTATOR') {
+            showScreen(spectatorViewScreen)
+        }
+        else {
+            showScreen(waitingRoomScreen);
+        }
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
@@ -127,7 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.type === 'JOIN_CONFIRMED') {
                 currentGameId = data.gameId;
                 waitingRoomGameId.textContent = currentGameId;
-                showScreen(waitingRoomScreen);
             }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {

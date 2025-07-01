@@ -1,11 +1,13 @@
+/* styles/style.css - General/Shared Styles */
+
 body {
     font-family: 'Inter', sans-serif;
     /* Retro gradient background */
     background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    /* Removed display, justify-content, align-items, flex-direction, padding-top
+       from here, as they are specific to the layout of the spectate page and
+       will be defined in spectate-page.css for that specific page. */
     overflow: hidden; /* Prevent scroll for background effects */
     position: relative;
 }
@@ -121,12 +123,8 @@ body::before {
 
 /* Basic responsiveness for smaller screens */
 @media (max-width: 640px) {
-    .container {
-        padding: 1rem;
-        width: 90%;
-    }
     .retro-heading {
-        font-size: 1.5rem;
+        font-size: 1.5rem; /* This will be overridden by more specific media queries in spectate-page.css */
     }
     .btn {
         padding: 0.75rem 1.5rem;
