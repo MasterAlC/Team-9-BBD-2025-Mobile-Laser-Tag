@@ -142,7 +142,7 @@
 - **Description:** Logs in a user and sends the user ID to the client.  
 - **Parameters:**  
     - username (string): The player's username  
-- **Returns:** User ID and confirmation  
+- **Returns:** User ID and (login_success)confirmation  
 
 **timer_tick**  
 - **Description:** Sends the current game timer to all users.  
@@ -159,13 +159,18 @@
 - **Description:** Ends the game, deletes the game room instance, and cleans up all related data.  
 - **Parameters:**  
     - gameId (string): The game room ID  
-- **Returns:** Confirmation  
+- **Returns:** (game_ended)Confirmation
 
 **create_game**  
 - **Description:** Instantiates a new game room and waits for all players to join.  
 - **Parameters:**  
     - hostId (string): The host player's ID  
-- **Returns:** The new game room ID and confirmation  
+- **Returns:** The new game room ID and (game_created)confirmation 
+**error**
+-  **Description:** It is used to communicate error messages between the client and server
+- **parameters**
+    - message: Describe the error
+- **returns** Nothing
 
 #### Roles
 
