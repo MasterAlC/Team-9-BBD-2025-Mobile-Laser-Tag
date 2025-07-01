@@ -6,10 +6,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const joinGameScreen = document.getElementById('joinGameScreen');
     const waitingRoomScreen = document.getElementById('waitingRoomScreen');
     const playerViewScreen = document.getElementById('playerViewScreen')
-    const screens = [homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen]
+    const usernameScreen = document.getElementById('usernameScreen');
+    const usernameInput = document.getElementById('usernameInput');
+    const continueBtn = document.getElementById('continueBtn');
+    const hostPlayerList = document.getElementById('hostPlayerList');
+   
+    const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen]
 
     let socket;
     let currentGameId = null;
+    let playerName = null;
 
     const createdGameCode = document.getElementById('createdGameCode');
     const startGameBtn = document.getElementById('startGameBtn');
@@ -17,21 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const waitingRoomGameId = document.getElementById('waitingRoomGameId');
     const playerList = document.getElementById('playerList');
     const waitingMessage = document.getElementById('waitingMessage');
+    
 
-    /*document.getElementById('createGameBtn').addEventListener('click', () => {
+    document.getElementById('createGameBtn').addEventListener('click', () => {
         socket = new WebSocket('ws://localhost:3000');
 
         socket.onopen = () => {
-            socket.send(JSON.stringify({ type: 'CREATE_GAME' }));
-        };*/
+            socket.send(JSON.stringify({
+                type: 'CREATE_GAME',
+                playerName: playerName 
+            }));
+        };
 
-    document.getElementById('createGameBtn').addEventListener('click', () => {
+    /*document.getElementById('createGameBtn').addEventListener('click', () => {
         // Mock behavior for testing
         const fakeGameId = Math.random().toString(36).substr(2, 6).toUpperCase();
         createdGameCode.textContent = fakeGameId;
         currentGameId = fakeGameId;
-        showScreen(createGameScreen);
-        //Ends here
+        showScreen(createGameScreen);*/
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
@@ -51,10 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
                 playerList.innerHTML = '';
-                data.players.forEach(p => {
+                /*data.players.forEach(p => {
                     const li = document.createElement('li');
                     li.textContent = p.id;
                     playerList.appendChild(li);
+                });*/
+
+                data.players.forEach(p => {
+                    const li1 = document.createElement('li');
+                    li1.textContent = p.name || p.id;
+                    playerList.appendChild(li1);
+
+                    const li2 = document.createElement('li');
+                    li2.textContent = p.name || p.id;
+                    hostPlayerList.appendChild(li2);
                 });
             }
 
@@ -96,7 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             socket.send(JSON.stringify({
                 type: 'JOIN_GAME',
                 gameId: code,
-                role: role
+                role: role,
+                playerName: playerName
             }));
         };
 
@@ -167,5 +187,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('playButton').addEventListener('click', () => {
         startGame()
     })
+
+    continueBtn.addEventListener('click', () => {
+    const name = usernameInput.value.trim();
+    if (!name) {
+        showMessage("Please enter your name!");
+        return;
+    }
+
+    playerName = name;
+    showScreen(homeScreen);
+    });
 
 });

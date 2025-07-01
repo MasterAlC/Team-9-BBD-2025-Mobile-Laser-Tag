@@ -25,7 +25,7 @@
 <body class="flex flex-col items-center justify-center min-h-screen p-4 bg-black text-white">
 
   <!-- HOME SCREEN -->
-  <div id="homeScreen" class="container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+  <div id="homeScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
     <h1 class="retro-heading text-4xl sm:text-5xl font-bold mb-8 text-cyan-400">
       Mobile Lazer Tag
     </h1>
@@ -44,31 +44,36 @@
   </div>
 
   <!-- CREATE GAME SCREEN -->
-<div id="createGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
-    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Game Created!</h2>
-    <p class="text-lg mb-6">Share this code with your friends:</p>
-    <p id="createdGameCode" class="text-2xl font-bold text-yellow-400 mb-8"></p>
-    
-    <button id="startGameBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs mb-4">
-      Start Game
-    </button>
+  <div id="createGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+      <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Game Created!</h2>
+      <p class="text-lg mb-6">Share this code with your friends:</p>
+      <p id="createdGameCode" class="text-2xl font-bold text-yellow-400 mb-8"></p>
+      
+      <div class="my-6">
+        <h3 class="text-xl text-green-300 mb-2">Players Joined:</h3>
+        <ul id="hostPlayerList" class="text-lg space-y-2 text-white"></ul>
+      </div>
 
-    <button id="backToHomeFromCreateBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
-      Back to Home
-    </button>
-</div>
+      <button id="startGameBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs mb-4">
+        Start Game
+      </button>
+
+      <button id="backToHomeFromCreateBtn" class="hidden btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
+        Back to Home
+      </button>
+  </div>
 
   <!-- JOIN GAME SCREEN -->
-<div id="joinGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500"">
-    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Join a Game</h2>
-    <input type="text" id="joinGameCodeInput" placeholder="Enter Game Code" class="w-full mb-6 py-3 px-4 text-black text-lg rounded-lg border border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-600" />
-    <button id="joinAsPlayerBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs">Play</button>
-    <button id="joinAsSpectatorBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700 bg-indigo-700 mb-4">Spectate</button>
-    
-    <button id="backToHomeFromJoinBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
-      Back to Home
-    </button>
-</div>
+  <div id="joinGameScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500"">
+      <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Join a Game</h2>
+      <input type="text" id="joinGameCodeInput" placeholder="Enter Game Code" class="w-full mb-6 py-3 px-4 text-black text-lg rounded-lg border border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-600" />
+      <button id="joinAsPlayerBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg mb-6 w-full max-w-xs">Play</button>
+      <button id="joinAsSpectatorBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700 bg-indigo-700 mb-4">Spectate</button>
+      
+      <button id="backToHomeFromJoinBtn" class="hidden btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs bg-indigo-700">
+        Back to Home
+      </button>
+  </div>
 
   <!-- WAITING ROOM SCREEN -->
   <div id="waitingRoomScreen" class="hidden container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
@@ -92,6 +97,15 @@
         <div id="crosshair"></div>
         <div id="result">Detecting...</div>
     </div>
+  </div>
+
+  <!-- USERNAME SCREEN -->
+  <div id="usernameScreen" class="container bg-gray-900 bg-opacity-70 backdrop-blur-sm rounded-xl p-8 shadow-lg max-w-lg w-full text-center border border-purple-500">
+    <h2 class="retro-heading text-3xl mb-6 text-cyan-400">Enter Username</h2>
+    <input type="text" id="usernameInput" placeholder="Your username..." class="w-full mb-6 py-3 px-4 text-black text-lg rounded-lg border border-purple-500 focus:outline-none focus:ring-4 focus:ring-purple-600" />
+    <button id="continueBtn" class="btn text-xl font-bold py-3 px-6 rounded-lg w-full max-w-xs">
+      Continue
+    </button>
   </div>
 
 </body>
