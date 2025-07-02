@@ -95,7 +95,7 @@ sendError = (socket, message, protocol) => {
   console.error(`${message} \nProtocol: ${protocol || "Unknown"}`);
 };
 ws.on("connection", (socket) => {
-  socket.on("message", function incoming(message) {
+  socket.on("message", async function incoming(message) {
     let data;
     let gameId, game;
     try {
@@ -118,7 +118,7 @@ ws.on("connection", (socket) => {
           })
         );
         break;
-              case "create_game":
+      case "create_game":
         // Handle create game event
         gameId = uuidv4().slice(0, 6).toUpperCase(); // Generate a random game ID
         console.log(`Game created with ID: ${gameId}`);
@@ -136,26 +136,24 @@ ws.on("connection", (socket) => {
             message: "Game created successfully!",
           })
         );
-        
+
         // --- FIX: Send a join confirmation to the host with their team color. ---
         // This makes the host's experience consistent with a joining player.
         // It uses the correct `gameId` and adds the `team` property.
         socket.send(
-            JSON.stringify({
-              type: "join_confirmed",
-              gameId: gameId, 
-              message: `Joined game ${gameId} successfully as the host!`,
-              team: player.team // Send the assigned team color
-            })
-          );
+          JSON.stringify({
+            type: "join_confirmed",
+            gameId: gameId,
+            message: `Joined game ${gameId} successfully as the host!`,
+            team: player.team, // Send the assigned team color
+          })
+        );
 
         // Broadcast the initial player list (containing just the host) to the new game room.
         const playerlist1 = activeGames.get(gameId).getPlayerList();
         activeGames
           .get(gameId)
-          .broadcastAll(
-            { type: "player_list_update", players: playerlist1 }
-          );
+          .broadcastAll({ type: "player_list_update", players: playerlist1 });
         break;
       case "player_join":
         console.log(
@@ -190,16 +188,18 @@ ws.on("connection", (socket) => {
             JSON.stringify({
               type: "join_confirmed",
               gameId: data.gameId,
-              message: `Joined game ${data.gameId} successfully!, as spec`
+              message: `Joined game ${data.gameId} successfully!, as spec`,
             })
           );
-          console.log("Spectator created")
+          console.log("Spectator created");
         } else if (data.role == "player") {
           // Assign player to a team in the game
           addPlayer(data.gameId, socket.id, socket, (isSpectator = false));
-          console.log("color:",activeGames.get(data.gameId).getPlayer(socket.id).team);
+          console.log(
+            "color:",
+            activeGames.get(data.gameId).getPlayer(socket.id).team
+          );
           socket.send(
-            
             JSON.stringify({
               type: "join_confirmed",
               gameId: data.gameId,
@@ -226,9 +226,7 @@ ws.on("connection", (socket) => {
         // TODO: Send all player team information (low priority)
         activeGames
           .get(data.gameId)
-          .broadcastAll(
-            { type: "player_list_update", players: playerlist }
-          );
+          .broadcastAll({ type: "player_list_update", players: playerlist });
         break;
       case "player_left":
         // Handle player left event
@@ -240,26 +238,32 @@ ws.on("connection", (socket) => {
         gameId = data.gameId;
         game = activeGames.get(gameId);
         color = data.color;
-        game.playerHitEventHandler(socket.id, color)
+        game.playerHitEventHandler(socket.id, color);
         // Handle player hit event
         console.log(`${data.username} shot ${data.color}!`);
         break;
       case "start_game":
         // Handle start game event
         console.log("Game started");
-            
+
         // Check if game ID is valid
 
         // Get correct game according to game ID
         const gameToStart = activeGames.get(data.gameId);
         // Start game
-        console.log("Test3")
         if (gameToStart) {
-          console.log("Test")
-          gameToStart.startGame();
-          console.log("Game started eco")
+          const result = await gameToStart.startGame();
+          //Since the result is a particular string we are expecting
+          if(result === "game_ended"){
+            activeGames.delete(data.gameId);
+          }
+          
         } else {
-          sendError(socket, `Cannot start game. Game with ID ${data.gameId} does not exist.`, 'start_game_error');
+          sendError(
+            socket,
+            `Cannot start game. Game with ID ${data.gameId} does not exist.`,
+            "start_game_error"
+          );
         }
 
         // Broadcast game start event to all players in the game
