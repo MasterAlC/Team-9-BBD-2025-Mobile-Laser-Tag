@@ -58,13 +58,13 @@
 **Description:** Finds and returns the player with the highest score in this game  
 **Parameters:** None  
 **Returns:**  
-    - Player object of the winning player  
-    - null if no players exist  
+ - Player object of the winning player  
+ - null if no players exist  
 
 **broadcastAll(message)**  
 **Description:** Sends a JSON message to all the players in the game via their sockets  
 **Parameters:**  
-    - message (object) -> JSON object to send to all players  
+ - message (object) -> JSON object to send to all players  
 **Returns:** void  
 
 
@@ -101,3 +101,89 @@
     - shooterId (string) -> ID of the player who shot  
     - targetId (string) -> ID of the player who was hit  
 **Returns:** void  
+
+### Protocols
+
+#### Message Types
+
+**update_players**  
+- **Description:** Returns a new list of players that have joined the room.  
+- **Parameters:** None  
+- **Returns:** Array of player objects  
+
+**join**  
+- **Description:** Joins a game room.  
+- **Parameters:**  
+    - gameId (string): The game room ID  
+    - role (string): Either "player" or "spectator"
+    - username(string)  
+- **Returns:** (join_confirmed)Confirmation and updated player list object  
+
+**leave**  
+- **Description:** Removes a player from a game room and updates the list with a "left" flag.  
+- **Parameters:**  
+    - gameId (string): The game room ID  
+    - playerId (string): The player's unique ID  
+- **Returns:** Confirmation and updated player list  
+
+**start_game**  
+- **Description:** Starts the game if all players are even, randomly assigns players to teams, assigns initial scores, and returns the full player list.  
+- **Parameters:**  
+    - gameId (string): The game room ID  
+- **Returns:** Confirmation and updated player list  
+
+**side_hit**  
+- **Description:** Sends the updated group score to all users.  
+- **Parameters:**  
+    - group (string): The group/team affected  
+    - score (number): The new group score  
+- **Returns:** Updated group score  
+
+**login**  
+- **Description:** Logs in a user and sends the user ID to the client.  
+- **Parameters:**  
+    - username (string): The player's username  
+- **Returns:** User ID and (login_success)confirmation  
+
+**timer_tick**  
+- **Description:** Sends the current game timer to all users.  
+- **Parameters:**  
+    - time (number): Time remaining in seconds  
+- **Returns:** Current timer value  
+
+**update_scores**  
+- **Description:** Returns the current group scores.  
+- **Parameters:** None  
+- **Returns:** List of group scores  
+
+**end_game**  
+- **Description:** Ends the game, deletes the game room instance, and cleans up all related data.  
+- **Parameters:**  
+    - gameId (string): The game room ID  
+- **Returns:** (game_ended)Confirmation
+
+**create_game**  
+- **Description:** Instantiates a new game room and waits for all players to join.  
+- **Parameters:**  
+    - hostId (string): The host player's ID  
+- **Returns:** The new game room ID and (game_created)confirmation 
+**error**
+-  **Description:** It is used to communicate error messages between the client and server
+- **parameters**
+    - message: Describe the error
+    - protocol: (string || Null) explains where the error originated from (chosen between on of the other **types**)
+- **returns** Nothing
+
+#### Roles
+
+- **player**
+- **spectator**
+
+#### isHost
+
+- **true** or **false**
+
+#### group
+
+- **Blue**
+- **Red**

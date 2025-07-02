@@ -1,6 +1,7 @@
 import { initCameraDetection } from "./cameraDetection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
+    let isHost = false;
     const homeScreen = document.getElementById('homeScreen');
     const createGameScreen = document.getElementById('createGameScreen');
     const joinGameScreen = document.getElementById('joinGameScreen');
@@ -15,9 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
   
     const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen, spectatorViewScreen]
 
-    let socket;
+    // Initialize WebSocket connection
+    const url = window.location
+    console.log(url.host);
+
+    const socket = new WebSocket(`wss://${url.host}`);
+    
+    // Intialise username and game ID variables
     let currentGameId = null;
     let playerName = null;
+
+    // Player team can be 'red' or 'blue'
+    // This will be set when the player joins a game
+    let playerTeam = null;
 
     const createdGameCode = document.getElementById('createdGameCode');
     const startGameBtn = document.getElementById('startGameBtn');
@@ -28,36 +39,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     document.getElementById('createGameBtn').addEventListener('click', () => {
-        socket = new WebSocket('ws://localhost:3000');
-
-        socket.onopen = () => {
-            socket.send(JSON.stringify({
-                type: 'CREATE_GAME',
-                playerName: playerName 
-            }));
-        };
-
-    /*document.getElementById('createGameBtn').addEventListener('click', () => {
-        // Mock behavior for testing
-        const fakeGameId = Math.random().toString(36).substr(2, 6).toUpperCase();
-        createdGameCode.textContent = fakeGameId;
-        currentGameId = fakeGameId;
-        showScreen(createGameScreen);*/
+        isHost = true;
+        socket.send(JSON.stringify({
+            type: 'create_game'}));
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
 
-            if (data.type === 'GAME_CREATED') {
+            if (data.type === 'game_created') {
                 currentGameId = data.gameId;
                 createdGameCode.textContent = data.gameId;
                 showScreen(createGameScreen);
             }
 
-            if (data.type === 'JOIN_CONFIRMED') {
-                currentGameId = data.gameId;
-                waitingRoomGameId.textContent = currentGameId;
-                showScreen(waitingRoomScreen);
+            if (data.type === 'join_error') {
+                // Display popup on cient that join was not successful
             }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
@@ -91,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startGameBtn.addEventListener('click', () => {
         socket.send(JSON.stringify({
-            type: 'START_GAME',
+            type: 'start_game',
             gameId: currentGameId
         }));
     });
@@ -111,33 +108,51 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // socket = new WebSocket('ws://localhost:3000');
-
-        // socket.onopen = () => {
-        //     socket.send(JSON.stringify({
-        //         type: 'JOIN_GAME',
-        //         gameId: code,
-        //         role: role
-        //     }));
-        // };
-
         if (role == 'SPECTATOR') {
-            showScreen(spectatorViewScreen)
+            // Send a message to the server to join as a spectator
+            socket.send(JSON.stringify({
+                type: 'player_join',
+                username: playerName,
+                gameId: code,
+                role: 'spectator'
+            }));
         }
-        else {
-            showScreen(waitingRoomScreen);
+        else if (role == 'PLAYER'){
+            // Send a message to the server to join as a player
+            socket.send(JSON.stringify({
+                type: 'player_join',
+                username: playerName,
+                gameId: code,
+                role: 'player'
+            }));
         }
 
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
 
-            if (data.type === 'JOIN_CONFIRMED') {
+            // Handle "join_confirmed" message from server
+            if (data.type === 'join_confirmed') {
+                console.log(`Received confirmation to join game ${data.gameId}`)
                 currentGameId = data.gameId;
-                waitingRoomGameId.textContent = currentGameId;
+                // If player is a spectator, show the spectator screen
+
+                if (role === 'SPECTATOR') {
+                    console.log("Joining as spectator")
+                    showScreen(spectatorViewScreen);
+                }
+                else if (role === 'PLAYER') {
+                    // Store team information
+                    playerTeam = data.team;
+                    console.log(`Joined game ${data.gameId} as player on team ${playerTeam}`);
+                    waitingRoomGameId.textContent = `Joined Game: ` + currentGameId + ` on team ${playerTeam} (Waiting for host to start...)`;
+                    showScreen(waitingRoomScreen);
+                }
             }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
+
+                // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
                 playerList.innerHTML = '';
                 data.players.forEach(p => {
                     const li = document.createElement('li');
@@ -146,7 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            if (data.type === 'GAME_START') {
+            if (data.type === 'game_started') {
+                // TODO: Handle game started event
+
+                // Transition to player view screen
+
                 waitingMessage.textContent = 'Game Started! Enjoy!';
             }
         };
@@ -196,14 +215,20 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     continueBtn.addEventListener('click', () => {
-    const name = usernameInput.value.trim();
-    if (!name) {
-        showMessage("Please enter your name!");
-        return;
-    }
+        const name = usernameInput.value.trim();
+        if (!name) {
+            showMessage("Please enter your name!");
+            return;
+        }
 
-    playerName = name;
-    showScreen(homeScreen);
+        playerName = name;
+        socket.send(JSON.stringify({
+            type: 'login',
+            username: playerName
+        }));
+
+        showScreen(homeScreen);
+
     });
 
 });
