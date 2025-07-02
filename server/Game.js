@@ -4,7 +4,7 @@ class Game {
   constructor(gameId) {
     this.gameId = gameId;
     this.shooters = new Map();
-    this.GAME_DURATION = 10; //  5 minutes (TODO: make one minute for deployment)
+    this.GAME_DURATION = 2*60;
     this.gameTimer = null;
     this.gameInProgress = false;
     this.blueTeamScore = 0;
