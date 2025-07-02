@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Updates player scores and team scores based on the provided players array.
  * Players are sorted into their respective team tables (Red/Blue) and overall team scores are tallied.
- * @param {Array<Object>} players - An array of player objects, each with { name: string, score: number, team: 'red' | 'blue' }.
+ * @param {Array<Object>} players - An array of player objects, each with { username: string, score: number, team: 'red' | 'blue' }.
  */
 function updateScores(players) {
     const redTeamPlayersBody = document.getElementById('redTeamPlayersBody');
@@ -64,7 +64,7 @@ function updateScores(players) {
 
         row.innerHTML = `
             <td>${rank}</td>
-            <td>${player.name}</td>
+            <td>${player.username}</td>
             <td>${player.score}</td>
         `;
         redTeamPlayersBody.appendChild(row);
@@ -78,7 +78,7 @@ function updateScores(players) {
 
         row.innerHTML = `
             <td>${rank}</td>
-            <td>${player.name}</td>
+            <td>${player.username}</td>
             <td>${player.score}</td>
         `;
         blueTeamPlayersBody.appendChild(row);
@@ -103,19 +103,9 @@ function updateLobby(lobbyNumber) {
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('closeMessageBox').addEventListener('click', hideMessageBox);
-
     updateScores([]); // Initialize with empty scores
     updateTime(0);
     updateLobby('Connecting...');
-
-    // Event listener for the Leave Game button
-    document.getElementById('leaveButton').addEventListener('click', () => {
-        console.log("Leave Game button clicked. Navigating back to home screen (or equivalent).");
-        showMessageBox("Leaving game...");
-        // Here you would typically add logic to navigate the user away,
-        // e.g., window.location.href = '/home'; or a router push.
-    });
 });
 
 export {updateTime, updateScores, updateLobby};

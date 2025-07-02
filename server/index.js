@@ -207,7 +207,7 @@ ws.on("connection", (socket) => {
         activeGames
           .get(data.gameId)
           .broadcastAll(
-            JSON.stringify({ type: "player_list_update", players: playerlist })
+            { type: "player_list_update", players: playerlist }
           );
         break;
       case "player_left":
@@ -226,8 +226,16 @@ ws.on("connection", (socket) => {
         // Check if game ID is valid
 
         // Get correct game according to game ID
-
+        const gameToStart = activeGames.get(data.gameId);
         // Start game
+        console.log("Test3")
+        if (gameToStart) {
+          console.log("Test")
+          gameToStart.startGame();
+          console.log("Game started eco")
+        } else {
+          sendError(socket, `Cannot start game. Game with ID ${data.gameId} does not exist.`, 'start_game_error');
+        }
 
         // Broadcast game start event to all players in the game
         break;

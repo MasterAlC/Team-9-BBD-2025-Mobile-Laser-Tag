@@ -1,4 +1,5 @@
-import { initCameraDetection, shoot, detectColor } from "./cameraDetection.js";
+import { initCameraDetection, updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
+import { updateScores, updateTime, updateLobby } from "./spectate-script.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let isHost = false;
@@ -75,7 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            if (data.type === 'GAME_START') {
+            if (data.type === 'game_started') {
+                console.log("Game started host");
+                startGame(); 
+
                 waitingMessage.textContent = 'Game Started! Good luck!';
             }
         };
@@ -151,18 +155,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.type === 'player_list_update') {
 
-                // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
-                playerList.innerHTML = '';
-                data.players.forEach(p => {
-                    const li = document.createElement('li');
-                    li.textContent = `${p.username}` +" (" + p.team + ")";
-                    playerList.appendChild(li);
-                });
+                if (role == 'SPECTATOR') {
+                    // Update the player list for spectators
+                    updateScores(data.players);
+                }
+                else {
+                    // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
+                    playerList.innerHTML = '';
+                    data.players.forEach(p => {
+                        const li = document.createElement('li');
+                        li.textContent = `${p.username}` +" (" + p.team + ")";
+                        playerList.appendChild(li);
+                    });
+                }
             }
 
             if (data.type === 'game_started') {
+                console.log("game should start");
                 // TODO: Handle game started event
-
+                startGame(); 
                 // Transition to player view screen
 
                 waitingMessage.textContent = 'Game Started! Enjoy!';
@@ -187,25 +198,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         showScreen(playerViewScreen)
         console.log("Starting Game...")
-        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-            console.log("Browser supports camera media access")
-            // Get camera access and initialise video
-            initCameraDetection()
+//         if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+//             console.log("Browser supports camera media access")
+//             // Get camera access and initialise video
+//             initCameraDetection()
             
-            // Enable button to send shoot messages
-            shootButton.addEventListener('click', () => {
-                console.log('Shoot button pressed!'); 
-                let colour = detectColor();
+//             // Enable button to send shoot messages
+//             shootButton.addEventListener('click', () => {
+//                 console.log('Shoot button pressed!'); 
+//                 let colour = detectColor();
                 
-                console.log("Sending shoot signal to server. Detected color:", colour);
-                socket.send(JSON.stringify({
-                    type: 'player_hit',
-                    detectedColour: colour,
-                    shooterTeam: playerTeam,
-                    username: playerName
-                }))
-            });
-        }
+//                 console.log("Sending shoot signal to server. Detected color:", colour);
+//                 socket.send(JSON.stringify({
+//                     type: 'player_hit',
+//                     detectedColour: colour,
+//                     shooterTeam: playerTeam,
+//                     username: playerName
+//                 }))
+//             });
+//         }
         else {
             console.log("Browser does not support camera media access")
             resultLabel.innerText = "Browser does not support camera media access"
@@ -228,6 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame()
     })
 
+    //Continue button listener for the username screen
     continueBtn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
         if (!name) {
@@ -243,6 +255,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showScreen(homeScreen);
 
+    });
+
+    //Leave game button listener for the spectator view
+    document.getElementById('leaveButton').addEventListener('click', () => {
+        socket.send(JSON.stringify({
+            type: 'leave_game',
+            gameId: currentGameId,
+            username: playerName,
+            role: 'spectator'
+        }));
+
+        currentGameId = null;
+        showScreen(homeScreen);
     });
 
 });
