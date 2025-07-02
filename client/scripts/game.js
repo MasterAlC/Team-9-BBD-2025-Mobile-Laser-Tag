@@ -79,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     li.textContent = `${p.username}` +" (" + p.team + ")";
                     hostPlayerList.appendChild(li);
                 });
+
+                updatePlayerScores(data.players)
             }
 
             if (data.type === 'timer_tick'){
@@ -153,6 +155,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (role === 'SPECTATOR') {
                     console.log("Joining as spectator")
                     showScreen(spectatorViewScreen);
+                    updateLobby(currentGameId)
                 }
                 else if (role === 'PLAYER') {
                     // Store team information
@@ -182,10 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         li.textContent = `${p.username}` +" (" + p.team + ")";
                         playerList.appendChild(li);
                     });
+
+                    updatePlayerScores(data.players)
                 }
             }
 
-            if (data.type === 'game_started') {
+            if (data.type === 'game_started' && role === 'PLAYER') {
                 console.log("game should start");
                 startGame(); 
                 console.log(playerTeam);

@@ -99,7 +99,7 @@ class Game {
     const shooter = this.shooters.get(shooterId);
     let score;
     if (!shooter) return;
-    if (shooter.team !== color) {
+    if (shooter.team !== color && color != 'blank') {
       // If the shooter is not on the team that was hit, ignore the event
       if (color === "blue") {
         this.redTeamScore += 1;
@@ -108,8 +108,8 @@ class Game {
         this.blueTeamScore++;
         score = this.blueTeamScore;
       }
+      shooter.updateScore(1);
     }
-    shooter.updateScore(1);
     let playersList = this.getPlayerList();
     this.broadcastAll({
       type: "player_list_update",
