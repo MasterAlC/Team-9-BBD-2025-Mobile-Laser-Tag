@@ -207,23 +207,23 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Enable button to send shoot messages
             shootButton.addEventListener('click', () => {
-                let colour = detectColor();
+                let detectedColour = detectColor();
                 
-                if (colour == "red") {
+                if (detectedColour == "red") {
                     updateActionLabel('HEADSHOT! You shot RED 🔴!')
                 }
-                else if (colour == "blue") {
+                else if (detectedColour == "blue") {
                     updateActionLabel('HEADSHOT! You shot BLUE 🔵!')
                 }
-                else if (colour == "blank") {
+                else if (detectedColour == "blank") {
                     updateActionLabel('Blank shot')
                 }
 
-                console.log("Sending shoot signal to server. Detected color:", colour);               
+                console.log("Sending shoot signal to server. Detected color:", detectedColour);               
                 socket.send(JSON.stringify({
                     type: 'player_hit',
-                    detectedColour: colour,
-                    shooterTeam: playerTeam,
+                    gameId: currentGameId,
+                    color: detectedColour,
                     username: playerName
                 }))
             });

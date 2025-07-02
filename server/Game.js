@@ -4,11 +4,11 @@ class Game {
   constructor(gameId) {
     this.gameId = gameId;
     this.shooters = new Map();
-    this.GAME_DURATION = 60;
+    this.GAME_DURATION = 5*60; //  5 minutes (TODO: make one minute for deployment)
     this.gameTimer = null;
     this.gameInProgress = false;
-    this.blueTeam = new Team("Blue", "#0000FF");
-    this.redTeam = new Team("Red", "#FF0000");
+    this.blueTeamScore = 0;
+    this.redTeamScore = 0;
     this.spectators = new Map(); // List of spectators
     this.side = "blue"; // Default side for shooters joining the game
   }
@@ -94,17 +94,29 @@ class Game {
     }, TICK_INTERVAL);
   }
 
-  playerHitEventHandler(shooterId, targetId) {
+  playerHitEventHandler(shooterId, color) {
     if (!this.gameInProgress) return;
-
     const shooter = this.shooters.get(shooterId);
+    let score;
     if (!shooter) return;
-
+    if (shooter.team !== color) {
+      // If the shooter is not on the team that was hit, ignore the event
+      if (color === "blue") {
+        this.redTeamScore += 1;
+        score = this.redTeamScore;
+      } else if(color === "red") {
+        this.blueTeamScore++;
+        score = this.blueTeamScore;
+      }
+    }
     shooter.updateScore(1);
-
+    let playersList = this.getPlayerList();
     this.broadcastAll({
-      type: "score_update",
-      players: this.getPlayerList() // Send the whole list so scores update everywhere
+      type: "player_list_update",
+      players: playersList,
+      gameId: this.gameId,
+      redTeamScore: this.redTeamScore,
+      blueTeamScore: this.blueTeamScore
     });
   }
 

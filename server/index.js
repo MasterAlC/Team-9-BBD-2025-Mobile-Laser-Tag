@@ -97,6 +97,7 @@ sendError = (socket, message, protocol) => {
 ws.on("connection", (socket) => {
   socket.on("message", function incoming(message) {
     let data;
+    let gameId, game;
     try {
       data = JSON.parse(message);
     } catch (e) {
@@ -119,9 +120,9 @@ ws.on("connection", (socket) => {
         break;
       case "create_game":
         // Handle create game event
-        const gameId = uuidv4().slice(0, 6).toUpperCase(); // Generate a random game ID
+        gameId = uuidv4().slice(0, 6).toUpperCase(); // Generate a random game ID
         console.log(`Game created with ID: ${gameId}`);
-        const game = createGame(gameId);
+        game = createGame(gameId);
 
         game.addPlayer(socket.id, socket);
         let player = game.getPlayer(socket.id);
@@ -217,7 +218,12 @@ ws.on("connection", (socket) => {
         break;
       case "player_hit":
         // Handle player hit event
-        console.log(`${data.username} shot ${data.detectedColour}!`);
+        gameId = data.gameId;
+        game = activeGames.get(gameId);
+        color = data.color;
+        game.playerHitEventHandler(socket.id, color)
+        // Handle player hit event
+        console.log(`${data.username} shot ${data.color}!`);
         break;
       case "start_game":
         // Handle start game event
