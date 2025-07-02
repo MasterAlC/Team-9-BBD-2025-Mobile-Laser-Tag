@@ -56,6 +56,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 showScreen(createGameScreen);
             }
 
+            if (data.type === 'join_confirmed') {
+                playerTeam = data.team;
+            }
+
             if (data.type === 'join_error') {
                 // Display popup on cient that join was not successful
             }
@@ -76,11 +80,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            if (data.type === 'timer_tick'){
+                updatePlayerTime(data.timeLeftSeconds);
+            }
+
             if (data.type === 'game_started') {
                 console.log("Game started host");
                 startGame(); 
-
-                waitingMessage.textContent = 'Game Started! Good luck!';
+                console.log(playerTeam);
+                updateTeamName(String(playerTeam), "white");
+                updatePlayerScores([]);
             }
         };
     });
@@ -153,6 +162,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            if (data.type === 'timer_tick'){
+                updatePlayerTime(data.timeLeftSeconds);
+                updateTime(data.timeLeftSeconds);
+            }
+
             if (data.type === 'player_list_update') {
 
                 if (role == 'SPECTATOR') {
@@ -172,11 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.type === 'game_started') {
                 console.log("game should start");
-                // TODO: Handle game started event
                 startGame(); 
-                // Transition to player view screen
-
-                waitingMessage.textContent = 'Game Started! Enjoy!';
+                console.log(playerTeam);
+                updateTeamName(String(playerTeam), "white");
+                updatePlayerScores([]);
             }
         };
     }
