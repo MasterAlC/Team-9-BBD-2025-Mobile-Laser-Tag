@@ -12,16 +12,6 @@ const resultDiv = document.getElementById('result');
 const canvas = document.createElement('canvas');
 const ctx = canvas.getContext('2d');
 
-function shoot(colour) {
-  // This function communicates the shoot operation to the server.
-  console.log("Sending shoot signal to server. Detected color:", colour);
-  Socket.send(JSON.stringify({
-    type: 'player_hit',
-    detectedColour: colour,
-    shooterTeam: team
-  }))
-}
-
 function initCameraDetection() {
     // Gain access to video stream
     navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
@@ -60,10 +50,10 @@ function detectColor() {
     }
 
     if (redCount > blueCount && redCount > PIXEL_COUNT_THRESHOLD) {
-      resultDiv.innerText = '🔴 Shot red';
+      resultDiv.innerText = 'HEADSHOT on RED 🔴!';
       return "red"
     } else if (blueCount > redCount && blueCount > PIXEL_COUNT_THRESHOLD) {
-      resultDiv.innerText = '🔵 Shot blue';
+      resultDiv.innerText = 'HEADSHOT on BLUE 🔵!';
       return "blue"
     } else {
       resultDiv.innerText = 'Blank shot';
@@ -71,4 +61,4 @@ function detectColor() {
     }
 }
 
-export {initCameraDetection, detectColor, shoot};
+export {initCameraDetection, detectColor};
