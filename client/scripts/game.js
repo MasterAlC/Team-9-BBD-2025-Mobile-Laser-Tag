@@ -1,5 +1,6 @@
-import { initCameraDetection, updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
+import { updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
 import { updateScores, updateTime, updateLobby } from "./spectate-script.js";
+import { initCameraDetection, detectColor } from "./cameraDetection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let isHost = false;
@@ -198,24 +199,34 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         showScreen(playerViewScreen)
         console.log("Starting Game...")
+        updateActionLabel('')
         if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-            // console.log("Browser supports camera media access")
-            // // Get camera access and initialise video
-            // initCameraDetection()
+            console.log("Browser supports camera media access")
+            // Get camera access and initialise video
+            initCameraDetection()
             
-            // // Enable button to send shoot messages
-            // shootButton.addEventListener('click', () => {
-            //     console.log('Shoot button pressed!'); 
-            //     let colour = detectColor();
+            // Enable button to send shoot messages
+            shootButton.addEventListener('click', () => {
+                let colour = detectColor();
                 
-            //     console.log("Sending shoot signal to server. Detected color:", colour);
-            //     socket.send(JSON.stringify({
-            //         type: 'player_hit',
-            //         detectedColour: colour,
-            //         shooterTeam: playerTeam,
-            //         username: playerName
-            //     }))
-            // });
+                if (colour == "red") {
+                    updateActionLabel('HEADSHOT! You shot RED 🔴!')
+                }
+                else if (colour == "blue") {
+                    updateActionLabel('HEADSHOT! You shot BLUE 🔵!')
+                }
+                else if (colour == "blank") {
+                    updateActionLabel('Blank shot')
+                }
+
+                console.log("Sending shoot signal to server. Detected color:", colour);               
+                socket.send(JSON.stringify({
+                    type: 'player_hit',
+                    detectedColour: colour,
+                    shooterTeam: playerTeam,
+                    username: playerName
+                }))
+            });
         }
         else {
             console.log("Browser does not support camera media access")
