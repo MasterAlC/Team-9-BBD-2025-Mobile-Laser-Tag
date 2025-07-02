@@ -103,19 +103,9 @@ function updateLobby(lobbyNumber) {
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('closeMessageBox').addEventListener('click', hideMessageBox);
-
     updateScores([]); // Initialize with empty scores
     updateTime(0);
     updateLobby('Connecting...');
-
-    // Event listener for the Leave Game button
-    document.getElementById('leaveButton').addEventListener('click', () => {
-        console.log("Leave Game button clicked. Navigating back to home screen (or equivalent).");
-        showMessageBox("Leaving game...");
-        // Here you would typically add logic to navigate the user away,
-        // e.g., window.location.href = '/home'; or a router push.
-    });
 });
 
 export {updateTime, updateScores, updateLobby};
