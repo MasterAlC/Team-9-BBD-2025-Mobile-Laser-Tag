@@ -42,6 +42,14 @@ class Game {
     player.team = this.side;
     this.side = this.side === "blue" ? "red" : "blue"; // Alternate sides for next player
   }
+  
+  removePlayer(playerId) {
+    this.shooters.delete(playerId);
+  }
+
+  removeSpectator(spectatorId) {
+    this.spectators.delete(spectatorId);
+  }
 
   getPlayer(id) {
     return this.shooters.get(id);

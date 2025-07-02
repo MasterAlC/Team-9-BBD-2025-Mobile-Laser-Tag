@@ -4,13 +4,9 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 const https = require("https");
+const http = require("http");
 const networkInterfaces = os.networkInterfaces();
 
-// SSL Certificate
-const options = {
-  key: fs.readFileSync(path.join(__dirname, "../cert", "server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "../cert", "server.cert")),
-};
 
 // Setup express application
 const app = express();
@@ -27,9 +23,32 @@ const getLocalExternalIP = () => {
   return "localhost";
 };
 
+// Create HTTPS server
+const PORT = process.env.PORT || 3000;
+
+let server;
+if (PORT == 3000) {
+  // Use HTTPS with self-signed certificate for local development
+  const options = {
+    key: fs.readFileSync(path.join(__dirname, "../cert", "server.key")),
+    cert: fs.readFileSync(path.join(__dirname, "../cert", "server.cert")),
+  };
+  server = https.createServer(options, app);
+}
+else {
+  // Use HTTP for production or non-local environments
+  console.log("Running in production mode, using HTTP");
+  server = http.createServer(app);
+}
+
+// Start server
+const LOCAL_IP = getLocalExternalIP();
+server.listen(PORT, () => {
+  console.log(`Server running at: https://${LOCAL_IP}:${PORT}`);
+});
+
 const Game = require("./Game");
 const activeGames = new Map();
-
 function createGame(gameId) {
   if (!activeGames.get(gameId)) {
     activeGames.set(gameId, new Game(gameId));
@@ -53,8 +72,8 @@ const startGame = (gameId) => {
   const game = activeGames.get(gameId);
   if (game) {
     game.startGame();
-    return True;
-  } else return False;
+    return true;
+  } else return false;
 };
 
 const playerHitEventHandler = (gameId, shooterId, targetId) => {
@@ -67,16 +86,6 @@ module.exports = {
   startGame,
   playerHitEventHandler,
 };
-
-// Create HTTPS server
-const PORT = process.env.PORT || 3000;
-const server = https.createServer(options, app);
-
-// Start server
-const LOCAL_IP = getLocalExternalIP();
-server.listen(PORT, () => {
-  console.log(`Server running at: https://${LOCAL_IP}:${PORT}`);
-});
 
 // Web socket stuff to send and receive
 const { WebSocketServer } = require("ws");
@@ -169,15 +178,9 @@ ws.on("connection", (socket) => {
           socket.send(
             JSON.stringify({
               type: "join_error",
-              message: "Game ID is invalid or does not exist.",
+              message: "Invalid Game ID. Please check the code and try again.",
             })
           );
-
-          // sendError(
-          //   socket,
-          //   `Either game ID ${data.gameId} does not exist or is not provided.`,
-          //   "join_error"
-          // );
           break;
         }
 
@@ -228,17 +231,32 @@ ws.on("connection", (socket) => {
           .get(data.gameId)
           .broadcastAll({ type: "player_list_update", players: playerlist });
         break;
-      case "player_left":
-        // Handle player left event
-        console.log(`Player left: ${data.username}`);
-        //players.delete(socket.id);
+    case 'leave_game':
+        gameId = data.gameId;
+        game = activeGames.get(gameId);
+        if (game) {
+            if (data.role === 'player') {
+                game.removePlayer(socket.id);
+                console.log(`Player ${socket.username} (${socket.id}) left game ${gameId} as a player.`);
+            } else if (data.role === 'spectator') {
+                game.removeSpectator(socket.id);
+                console.log(`Player ${socket.username} (${socket.id}) left game ${gameId} as a spectator.`);
+            }
+            // Broadcast the updated player list to all remaining participants in that game.
+            const updatedPlayerList = game.getPlayerList();
+            game.broadcastAll({ type: "player_list_update", players: updatedPlayerList });
+        }
         break;
       case "player_hit":
         // Handle player hit event
         gameId = data.gameId;
         game = activeGames.get(gameId);
-        color = data.color;
-        game.playerHitEventHandler(socket.id, color);
+
+        let color = data.color;
+        if (game) {
+            game.playerHitEventHandler(socket.id, color)
+        }
+        
         // Handle player hit event
         console.log(`${data.username} shot ${data.color}!`);
         break;
@@ -257,7 +275,6 @@ ws.on("connection", (socket) => {
           if(result === "game_ended"){
             activeGames.delete(data.gameId);
           }
-          
         } else {
           sendError(
             socket,
@@ -276,22 +293,21 @@ ws.on("connection", (socket) => {
         break;
     }
   });
-  // Player hit socket handler
 
-  // Start game socket handler
-  //Spectator socket handler
-  //Create game
-  //join games
-  //
   socket.on("close", () => {
+    // Optional: Handle player leaving if they close the tab/browser.
+    // This requires iterating through all active games to find the player.
     console.log(
-      "WebSocket client disconnected: " + socket._socket.remoteAddress
+      "WebSocket client disconnected: " + (socket.username || socket.id)
     );
+    activeGames.forEach((game, gameId) => {
+        if(game.shooters.has(socket.id) || game.spectators.has(socket.id)){
+            game.removePlayer(socket.id);
+            game.removeSpectator(socket.id);
+            const updatedPlayerList = game.getPlayerList();
+            game.broadcastAll({ type: "player_list_update", players: updatedPlayerList });
+            console.log(`Cleaned up disconnected player ${socket.username} from game ${gameId}`);
+        }
+    });
   });
 });
-
-//Start game
-//Upddate game state
-//End game state
-//Send game state to clients
-//Handle client connections and disconnections
