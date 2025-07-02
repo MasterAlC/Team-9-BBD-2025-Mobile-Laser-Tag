@@ -156,6 +156,11 @@
 - **Parameters:** None  
 - **Returns:** List of group scores  
 
+**player_list_update**  
+- **Description:** A request you make to the server to request players list.  
+- **Parameters:** None  
+- **Returns:** an object with confirmation of type(player_list_update) and a list of players
+
 **end_game**  
 - **Description:** Ends the game, deletes the game room instance, and cleans up all related data.  
 - **Parameters:**  

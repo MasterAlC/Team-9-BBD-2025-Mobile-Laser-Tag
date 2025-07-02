@@ -3,17 +3,20 @@ const Team = require("./Team");
 class Game {
   constructor(gameId) {
     this.gameId = gameId;
-    this.players = new Map();
+    this.shooters = new Map();
     this.GAME_DURATION = 60;
     this.gameTimer = null;
     this.gameInProgress = false;
     this.blueTeam = new Team("Blue", "#0000FF");
     this.redTeam = new Team("Red", "#FF0000");
     this.spectators = new Map(); // List of spectators
+    this.side = "blue"; // Default side for shooters joining the game
   }
-  //Receives a Json message and broadcasts it to all players
+
+
+  //Receives a Json message and broadcasts it to all shooters
   broadcastAll(JSONmessage) {
-    for (const player of this.players.values()) {
+    for (const player of this.shooters.values()) {
         const socket = player.socket;
         if (socket && socket.readyState === 1) {
             socket.send(JSONmessage);
@@ -27,24 +30,29 @@ class Game {
     }
   }
   addSpectator(id, socket) {
-    this.spectators[id] = new Player(id, socket);
+    this.spectators.set(id, new Player(id, socket))
     this.spectators.get(id).setSpectator(true);
   }
   addPlayer(id, socket) {
-    this.players.set(id, new Player(id, socket));
+    this.shooters.set(id, new Player(id, socket));
+    let player = this.shooters.get(id);
+    player.team = this.side;
+    this.side = (this.side === "blue") ? "red" : "blue"; // Alternate sides for next player
   }
 
   getPlayer(id) {
-    return this.players.get(id) || null;
+    return this.shooters.get(id) || null;
   }
 
   getPlayerList() {
     // Fix list to return usernames as well
-    return Array.from(this.players.values()).map((player) => ({
+    return Array.from(this.shooters.values()).map((player) => ({
       id: player.id,
       score: player.score,
       host: player.host,
+      username: player.socket.username,
       spectator: player.spectator,
+      team: player.team
     }));
   }
 
@@ -52,8 +60,8 @@ class Game {
     if (this.gameInProgress) return;
     this.gameInProgress = true;
 
-    for (const id in this.players) {
-      this.players(id).score = 0;
+    for (const id in this.shooters) {
+      this.shooters(id).score = 0;
     }
 
     this.broadcastAll({ type: "GAME_START", gameId: this.gameId });
@@ -81,7 +89,7 @@ class Game {
   playerHitEventHandler(shooterId, targetId) {
     if (!this.gameInProgress) return;
 
-    const shooter = this.players.get(shooterId);
+    const shooter = this.shooters.get(shooterId);
     if (!shooter) return;
 
     shooter.updateScore(1);
@@ -113,10 +121,10 @@ class Game {
     let maxScore = -Infinity;
     let winner = null;
 
-    for (const id in this.players) {
-      if (this.players.get(id).score > maxScore) {
-        maxScore = this.players.get(id).score;
-        winner = this.players.get(id);
+    for (const id in this.shooters) {
+      if (this.shooters.get(id).score > maxScore) {
+        maxScore = this.shooters.get(id).score;
+        winner = this.shooters.get(id);
       }
     }
     return winner;

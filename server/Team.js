@@ -22,7 +22,8 @@ class Team {
         return {
             name: this.name,
             color: this.color,
-            players: this.getPlayers()
+            players: this.getPlayers(),
+            score: this.score
         };
     }
 }
