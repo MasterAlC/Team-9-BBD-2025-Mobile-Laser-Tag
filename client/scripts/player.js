@@ -94,41 +94,27 @@ function updateTeamName(teamName, color) {
     }
 }
 
-/**
- * @param {string} detectedColor - The color detected by the camera ('RED', 'BLUE', 'BLANK').
- */
-function sendShootMessage(detectedColor) {
-    console.log(`Sending shoot message to server: Detected ${detectedColor}`);
-    updateActionLabel(`Shot ${detectedColor}`);
-}
-
-
 function initCameraDetection(shootCallback) {
     const REGION_SIZE = 100;
     const COLOUR_THRESHOLD = 150;
     const PIXEL_COUNT_THRESHOLD = 500;
     
-    // Select video, canvas, and result elements
     const video = document.getElementById('video');
     const resultDiv = document.getElementById('result');
     const shootButton = document.getElementById('shootButton');
 
-    // Create hidden canvas
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Gain access to video stream
     navigator.mediaDevices.getUserMedia({video: {facingMode: "environment"}}).then(stream => {
         video.srcObject = stream;
-        console.log(video)
     })
     .catch(err => {
         resultDiv.innerText = 'Camera access denied';
-        console.error(err)
-    })
+        console.error(err);
+    });
 
     function detectColor() {
-
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -154,30 +140,21 @@ function initCameraDetection(shootCallback) {
         }
 
         if (redCount > blueCount && redCount > PIXEL_COUNT_THRESHOLD) {
-          //resultDiv.innerText = '🔴 Shot red';
-          return "RED"
+          return "RED";
         } else if (blueCount > redCount && blueCount > PIXEL_COUNT_THRESHOLD) {
-          //resultDiv.innerText = '🔵 Shot blue';
-          return "BLUE"
+          return "BLUE";
         } else {
-          //resultDiv.innerText = 'Blank shot';
-          return "BLANK"
+          return "BLANK";
         }
-
-        //requestAnimationFrame(detectColor)
     }
-
-    // video.addEventListener('play', () => {
-    //    requestAnimationFrame(detectColor);
-    // });
-    shootButton.addEventListener('click', () => {
+    
+    shootButton.onclick = () => { // Use onclick to ensure it can be reassigned by new inits
       console.log('Shoot button pressed!'); 
       let colour = detectColor();
-      // Original shoot function call, now redirected to shootCallback
       if (shootCallback) {
           shootCallback(colour);
       }
-    });
+    };
 }
 
 /**
@@ -195,44 +172,9 @@ function endGame() {
         shootButton.disabled = true; // Deactivate shoot button
         shootButton.classList.add('opacity-50', 'cursor-not-allowed'); // Visual feedback for disabled
     }
-    updateActionLabel("Game Over!"); // Optionally update the action label
-    updatePlayerTime(0); // Set time to 0
+    updateActionLabel("Game Over!");
+    updatePlayerTime(0);
     console.log("Game ended. Leave button visible, Shoot button deactivated.");
 }
 
-
-// --- Initialization ---
-document.addEventListener('DOMContentLoaded', () => {
-
-    initCameraDetection(sendShootMessage); // Pass the shoot callback
-
-    // Close Message Box listener
-    document.getElementById('closeMessageBox').addEventListener('click', hideMessageBox);
-
-    document.getElementById('leaveGamePlayerBtn').addEventListener('click', () => {
-        showMessageBox("Leaving game...");
-    });
-    const DUMMY_PLAYERS = [
-    { name: "PlayerOne", score: 10, team: "red" },
-    { name: "PlayerTwo", score: 5, team: "blue" },
-    { name: "PlayerThree", score: 15, team: "red" },
-    { name: "PlayerFour", score: 8, team: "blue" },
-    { name: "PlayerFive", score: 2, team: "red" }
-    ];
-
-    // Initialize UI with default values
-    updatePlayerScores(DUMMY_PLAYERS); // Initialize with an empty array to show 0 for both teams
-    updatePlayerTime(90);
-    updateActionLabel("Aim and Shoot!");
-    updateTeamName("BLUE", "blue"); // Default team
-
-    // Ensure leave button is hidden on start (add 'hidden' class to it in HTML initially)
-    // if not already present
-    const leaveButton = document.getElementById('leaveGamePlayerBtn');
-    if (leaveButton && !leaveButton.classList.contains('hidden')) {
-        leaveButton.classList.add('hidden');
-    }
-
-});
-
-export { updatePlayerScores, updatePlayerTime, updateActionLabel, updateTeamName, showMessageBox, hideMessageBox, endGame };
+export { updatePlayerScores, updatePlayerTime, updateActionLabel, updateTeamName, showMessageBox, hideMessageBox, endGame, initCameraDetection };

@@ -14,11 +14,13 @@ class Game {
   }
 
 
-  //Receives a Json message and broadcasts it to all shooters
-  broadcastAll(JSONmessage) {
+  // CHANGED: This function now accepts a JavaScript object and handles stringifying it.
+  // This prevents crashes from sending an object directly over the socket.
+  broadcastAll(messageObject) {
+    const JSONmessage = JSON.stringify(messageObject); // Convert the object to a string HERE.
     for (const player of this.shooters.values()) {
         const socket = player.socket;
-        if (socket && socket.readyState === 1) {
+        if (socket && socket.readyState === 1) { // 1 means WebSocket.OPEN
             socket.send(JSONmessage);
         }
     }
@@ -29,6 +31,7 @@ class Game {
         }
     }
   }
+  
   addSpectator(id, socket) {
     this.spectators.set(id, new Player(id, socket))
     this.spectators.get(id).setSpectator(true);
@@ -41,11 +44,10 @@ class Game {
   }
 
   getPlayer(id) {
-    return this.shooters.get(id) || null;
+    return this.shooters.get(id);
   }
 
   getPlayerList() {
-    // Fix list to return usernames as well
     return Array.from(this.shooters.values()).map((player) => ({
       id: player.id,
       score: player.score,
@@ -60,11 +62,16 @@ class Game {
     if (this.gameInProgress) return;
     this.gameInProgress = true;
 
-    for (const id in this.shooters) {
-      this.shooters(id).score = 0;
+    for (const player of this.shooters.values()) {
+      player.score = 0;
     }
 
-    this.broadcastAll({ type: "GAME_START", gameId: this.gameId });
+    // NOTE: We now send an object to broadcastAll, which is safer.
+    // I am also using the consistent message type 'GAME_START' from our previous discussion.
+    this.broadcastAll({ 
+        type: "game_started", 
+        gameId: this.gameId
+    });
 
     let remainingTime = this.GAME_DURATION;
     const TICK_INTERVAL = 1000;
@@ -72,8 +79,9 @@ class Game {
     this.gameTimer = setInterval(() => {
       remainingTime -= 1;
 
+      // This call is now correct because broadcastAll expects an object.
       this.broadcastAll({
-        type: "TIMER_TICK",
+        type: "timer_tick",
         timeLeftSeconds: Math.max(0, remainingTime),
         gameId: this.gameId,
       });
@@ -95,10 +103,8 @@ class Game {
     shooter.updateScore(1);
 
     this.broadcastAll({
-      type: "SCORE_UPDATE",
-      playerId: shooter.id,
-      newScore: shooter.score,
-      gameId: this.gameId,
+      type: "score_update",
+      players: this.getPlayerList() // Send the whole list so scores update everywhere
     });
   }
 
@@ -107,9 +113,9 @@ class Game {
 
     const winner = this.getWinner();
     this.broadcastAll({
-      type: "GAME_OVER",
-      winnerId: winner?.id || null,
-      score: winner?.score || 0,
+      type: "game_over",
+      winner: winner, // Send the whole winner object
+      players: this.getPlayerList(),
       gameId: this.gameId,
     });
 
@@ -121,10 +127,11 @@ class Game {
     let maxScore = -Infinity;
     let winner = null;
 
-    for (const id in this.shooters) {
-      if (this.shooters.get(id).score > maxScore) {
-        maxScore = this.shooters.get(id).score;
-        winner = this.shooters.get(id);
+    // Corrected loop for iterating over a Map's values
+    for (const player of this.shooters.values()) {
+      if (player.score > maxScore) {
+        maxScore = player.score;
+        winner = player;
       }
     }
     return winner;
