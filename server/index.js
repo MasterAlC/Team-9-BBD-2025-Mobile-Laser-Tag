@@ -217,7 +217,7 @@ ws.on("connection", (socket) => {
         break;
       case "player_hit":
         // Handle player hit event
-        console.log(`Player hit: ${data.username}`);
+        console.log(`${data.username} shot ${data.detectedColour}!`);
         break;
       case "start_game":
         // Handle start game event

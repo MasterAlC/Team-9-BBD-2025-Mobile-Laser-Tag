@@ -1,4 +1,3 @@
-
 import { initCameraDetection, updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
 import { updateScores, updateTime, updateLobby } from "./spectate-script.js";
 
@@ -17,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const hostPlayerList = document.getElementById('hostPlayerList');
   
     const screens = [usernameScreen, homeScreen, createGameScreen, joinGameScreen, waitingRoomScreen, playerViewScreen, spectatorViewScreen]
+
+    const shootButton = document.getElementById('shootButton');
 
     // Initialize WebSocket connection
     const url = window.location
@@ -197,10 +198,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         showScreen(playerViewScreen)
         console.log("Starting Game...")
-        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-            console.log("Browser supports camera media access")
-            initCameraDetection()
-        }
+//         if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+//             console.log("Browser supports camera media access")
+//             // Get camera access and initialise video
+//             initCameraDetection()
+            
+//             // Enable button to send shoot messages
+//             shootButton.addEventListener('click', () => {
+//                 console.log('Shoot button pressed!'); 
+//                 let colour = detectColor();
+                
+//                 console.log("Sending shoot signal to server. Detected color:", colour);
+//                 socket.send(JSON.stringify({
+//                     type: 'player_hit',
+//                     detectedColour: colour,
+//                     shooterTeam: playerTeam,
+//                     username: playerName
+//                 }))
+//             });
+//         }
         else {
             console.log("Browser does not support camera media access")
             resultLabel.innerText = "Browser does not support camera media access"
