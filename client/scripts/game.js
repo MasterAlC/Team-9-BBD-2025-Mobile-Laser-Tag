@@ -26,6 +26,10 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentGameId = null;
     let playerName = null;
 
+    // Player team can be 'red' or 'blue'
+    // This will be set when the player joins a game
+    let playerTeam = null;
+
     const createdGameCode = document.getElementById('createdGameCode');
     const startGameBtn = document.getElementById('startGameBtn');
     const joinGameCodeInput = document.getElementById('joinGameCodeInput');
@@ -49,11 +53,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 showScreen(createGameScreen);
             }
 
-            if (data.type === 'join_confirmed') {
-                console.log(`Received confirmation to join game ${data.gameId}`)
-                currentGameId = data.gameId;
-                waitingRoomGameId.textContent = "Joined Game: " + currentGameId + " (Waiting for host to start...)";
-                showScreen(waitingRoomScreen);
+            if (data.type === 'join_error') {
+                // Display popup on cient that join was not successful
             }
 
             if (data.type === 'PLAYER_LIST_UPDATE') {
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     startGameBtn.addEventListener('click', () => {
         socket.send(JSON.stringify({
-            type: 'START_GAME',
+            type: 'start_game',
             gameId: currentGameId
         }));
     });
@@ -130,7 +131,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
 
+            // Handle "join_confirmed" message from server
+            if (data.type === 'join_confirmed') {
+                console.log(`Received confirmation to join game ${data.gameId}`)
+                currentGameId = data.gameId;
+                // If player is a spectator, show the spectator screen
+
+                if (role === 'SPECTATOR') {
+                    console.log("Joining as spectator")
+                    showScreen(spectatorViewScreen);
+                }
+                else if (role === 'PLAYER') {
+                    // Store team information
+                    playerTeam = data.team;
+                    console.log(`Joined game ${data.gameId} as player on team ${playerTeam}`);
+                    waitingRoomGameId.textContent = `Joined Game: ` + currentGameId + ` on team ${playerTeam} (Waiting for host to start...)`;
+                    showScreen(waitingRoomScreen);
+                }
+            }
+
             if (data.type === 'PLAYER_LIST_UPDATE') {
+
+                // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
                 playerList.innerHTML = '';
                 data.players.forEach(p => {
                     const li = document.createElement('li');
@@ -139,7 +161,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            if (data.type === 'GAME_START') {
+            if (data.type === 'game_started') {
+                // TODO: Handle game started event
+
+                // Transition to player view screen
+
                 waitingMessage.textContent = 'Game Started! Enjoy!';
             }
         };

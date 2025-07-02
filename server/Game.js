@@ -39,6 +39,7 @@ class Game {
   }
 
   getPlayerList() {
+    // Fix list to return usernames as well
     return Array.from(this.players.values()).map((player) => ({
       id: player.id,
       score: player.score,

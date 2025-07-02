@@ -135,23 +135,43 @@ ws.on("connection", (socket) => {
           })
         );
         //DOES THE HOST NEED TO SEE HOW MANY PEOPLE JOINED?
+
+        // todo: Update all players (host included) in game room with player list ()
+
         break;
-      case "join":
+      case "player_join":
         console.log(
           `Received request from: ${data.username} to join ${data.gameId}`
         );
+
+        // Check if game ID is valid
         if (!data.gameId || !activeGames.get(data.gameId)) {
-          sendError(
-            socket,
-            `Either game ID ${data.gameId} does not exist or is not provided.`,
-            "join"
+          // Game ID is NOT valid
+          // Rename error message sent to client as "join_error"
+
+          // Send "join_error" message to client
+          socket.send(
+            JSON.stringify({
+              type: "join_error",
+              message: "Game ID is invalid or does not exist.",
+            })
           );
+
+          // sendError(
+          //   socket,
+          //   `Either game ID ${data.gameId} does not exist or is not provided.`,
+          //   "join_error"
+          // );
           break;
         }
+
+        // Game ID IS valid
         if (data.role == "spectator") {
           addPlayer(data.gameId, socket.id, socket, (isSpectator = true));
         } else if (data.role == "player") {
+          // Assign player to a team
           addPlayer(data.gameId, socket.id, socket, (isSpectator = false));
+
         } else {
           sendError(
             socket,
@@ -160,9 +180,23 @@ ws.on("connection", (socket) => {
           );
           break;
         }
+
+        // Send join confirmation to the client
+        // TODO: Send player team with the join confirmed message
+        socket.send(
+          JSON.stringify({
+            type: "join_confirmed",
+            gameId: data.gameId,
+            message: `Joined game ${data.gameId} successfully!`,
+          })
+        );
+
         // Broadcast all the player list to the clients
         let playerlist = activeGames.get(data.gameId).getPlayerList();
-        activeGames.get(data.gameId).broadcastAll(JSON.stringify(playerlist));
+
+        // TODO: Fix player list update (sends message type 'PLAYER_LIST_UPDATE' and the playerList in the message data)
+        // TODO: Send all player team information (low priority)
+        activeGames.get(data.gameId).broadcastAll(JSON.stringify({type: "PLAYER_LIST_UPDATE", players: playerlist}));
         break;
       case "player_left":
         // Handle player left event
@@ -176,6 +210,14 @@ ws.on("connection", (socket) => {
       case "start_game":
         // Handle start game event
         console.log("Game started");
+
+        // Check if game ID is valid
+
+        // Get correct game according to game ID
+
+        // Start game
+
+        // Broadcast game start event to all players in the game
         break;
       default:
         data.type === null || data.type === undefined
@@ -185,7 +227,6 @@ ws.on("connection", (socket) => {
         break;
     }
   });
-
   // Player hit socket handler
 
   // Start game socket handler
