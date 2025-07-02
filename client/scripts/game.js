@@ -1,4 +1,5 @@
-import { initCameraDetection } from "./cameraDetection.js";
+import { initCameraDetection, updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
+import { updateScores, updateTime, updateLobby } from "./spectate-script.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let isHost = false;
@@ -73,7 +74,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            if (data.type === 'GAME_START') {
+            if (data.type === 'game_started') {
+                console.log("Game started host");
+                startGame(); 
+
                 waitingMessage.textContent = 'Game Started! Good luck!';
             }
         };
@@ -159,8 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (data.type === 'game_started') {
+                console.log("game should start");
                 // TODO: Handle game started event
-
+                startGame(); 
                 // Transition to player view screen
 
                 waitingMessage.textContent = 'Game Started! Enjoy!';
