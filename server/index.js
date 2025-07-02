@@ -168,10 +168,26 @@ ws.on("connection", (socket) => {
         // Game ID IS valid
         if (data.role == "spectator") {
           addPlayer(data.gameId, socket.id, socket, (isSpectator = true));
+          socket.send(
+            JSON.stringify({
+              type: "join_confirmed",
+              gameId: data.gameId,
+              message: `Joined game ${data.gameId} successfully!`
+            })
+          );
+          console.log("Spectator created")
         } else if (data.role == "player") {
-          // Assign player to a team
+          // Assign player to a team in the game
           addPlayer(data.gameId, socket.id, socket, (isSpectator = false));
-
+          socket.send(
+            JSON.stringify({
+              type: "join_confirmed",
+              gameId: data.gameId,
+              message: `Joined game ${data.gameId} successfully!`,
+              team: activeGames.get(data.gameId).getPlayer(socket.id).team.name,
+            })
+          );
+          console.log(`Player ${socket.username} created`);
         } else {
           sendError(
             socket,
@@ -183,20 +199,16 @@ ws.on("connection", (socket) => {
 
         // Send join confirmation to the client
         // TODO: Send player team with the join confirmed message
-        socket.send(
-          JSON.stringify({
-            type: "join_confirmed",
-            gameId: data.gameId,
-            message: `Joined game ${data.gameId} successfully!`,
-          })
-        );
-
         // Broadcast all the player list to the clients
         let playerlist = activeGames.get(data.gameId).getPlayerList();
 
         // TODO: Fix player list update (sends message type 'PLAYER_LIST_UPDATE' and the playerList in the message data)
         // TODO: Send all player team information (low priority)
-        activeGames.get(data.gameId).broadcastAll(JSON.stringify({type: "PLAYER_LIST_UPDATE", players: playerlist}));
+        activeGames
+          .get(data.gameId)
+          .broadcastAll(
+            JSON.stringify({ type: "player_list_update", players: playerlist })
+          );
         break;
       case "player_left":
         // Handle player left event
@@ -210,7 +222,7 @@ ws.on("connection", (socket) => {
       case "start_game":
         // Handle start game event
         console.log("Game started");
-
+            
         // Check if game ID is valid
 
         // Get correct game according to game ID

@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Display popup on cient that join was not successful
             }
 
-            if (data.type === 'PLAYER_LIST_UPDATE') {
+            if (data.type === 'player_list_update') {
                 playerList.innerHTML = '';
                 /*data.players.forEach(p => {
                     const li = document.createElement('li');
@@ -65,14 +65,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     playerList.appendChild(li);
                 });*/
 
+                hostPlayerList.innerHTML = '';
                 data.players.forEach(p => {
-                    const li1 = document.createElement('li');
-                    li1.textContent = p.name || p.id;
-                    playerList.appendChild(li1);
-
-                    const li2 = document.createElement('li');
-                    li2.textContent = p.name || p.id;
-                    hostPlayerList.appendChild(li2);
+                    const li = document.createElement('li');
+                    li.textContent = `${p.username}` +" (" + p.team + ")";
+                    hostPlayerList.appendChild(li);
                 });
             }
 
@@ -150,13 +147,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            if (data.type === 'PLAYER_LIST_UPDATE') {
+            if (data.type === 'player_list_update') {
 
                 // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
                 playerList.innerHTML = '';
                 data.players.forEach(p => {
                     const li = document.createElement('li');
-                    li.textContent = p.id;
+                    li.textContent = `${p.username}` +" (" + p.team + ")";
                     playerList.appendChild(li);
                 });
             }
