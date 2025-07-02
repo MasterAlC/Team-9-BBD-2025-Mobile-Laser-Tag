@@ -218,6 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startGame()
     })
 
+    //Continue button listener for the username screen
     continueBtn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
         if (!name) {
@@ -233,6 +234,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         showScreen(homeScreen);
 
+    });
+
+    //Leave game button listener for the spectator view
+    document.getElementById('leaveButton').addEventListener('click', () => {
+        socket.send(JSON.stringify({
+            type: 'leave_game',
+            gameId: currentGameId,
+            username: playerName,
+            role: 'spectator'
+        }));
+
+        currentGameId = null;
+        showScreen(homeScreen);
     });
 
 });
