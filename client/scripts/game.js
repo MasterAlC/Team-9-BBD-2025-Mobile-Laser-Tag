@@ -198,25 +198,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         showScreen(playerViewScreen)
         console.log("Starting Game...")
-//         if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-//             console.log("Browser supports camera media access")
-//             // Get camera access and initialise video
-//             initCameraDetection()
+        if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+            // console.log("Browser supports camera media access")
+            // // Get camera access and initialise video
+            // initCameraDetection()
             
-//             // Enable button to send shoot messages
-//             shootButton.addEventListener('click', () => {
-//                 console.log('Shoot button pressed!'); 
-//                 let colour = detectColor();
+            // // Enable button to send shoot messages
+            // shootButton.addEventListener('click', () => {
+            //     console.log('Shoot button pressed!'); 
+            //     let colour = detectColor();
                 
-//                 console.log("Sending shoot signal to server. Detected color:", colour);
-//                 socket.send(JSON.stringify({
-//                     type: 'player_hit',
-//                     detectedColour: colour,
-//                     shooterTeam: playerTeam,
-//                     username: playerName
-//                 }))
-//             });
-//         }
+            //     console.log("Sending shoot signal to server. Detected color:", colour);
+            //     socket.send(JSON.stringify({
+            //         type: 'player_hit',
+            //         detectedColour: colour,
+            //         shooterTeam: playerTeam,
+            //         username: playerName
+            //     }))
+            // });
+        }
         else {
             console.log("Browser does not support camera media access")
             resultLabel.innerText = "Browser does not support camera media access"
