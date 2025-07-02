@@ -1,4 +1,4 @@
-import { updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel } from "./player.js";
+import { updatePlayerScores, updatePlayerTime, updateTeamName, updateActionLabel, endGame } from "./player.js";
 import { updateScores, updateTime, updateLobby } from "./spectate-script.js";
 import { initCameraDetection, detectColor } from "./cameraDetection.js";
 
@@ -93,6 +93,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(playerTeam);
                 updateTeamName(String(playerTeam), "white");
                 updatePlayerScores([]);
+            }
+
+            if (data.type === 'game_over') {
+                console.log("game over");
+                if (data.winner==="draw") {
+                    updateActionLabel("Game Over! Draw!");
+                }
+                else{
+                    updateActionLabel("Game Over! Winner is: "+ data.winner+"!");
+                }
+                
+                endGame();
             }
         };
     });
@@ -196,6 +208,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(playerTeam);
                 updateTeamName(String(playerTeam), "white");
                 updatePlayerScores([]);
+            }
+
+            if (data.type === 'game_over' && role === 'PLAYER') {
+                console.log("game over");
+                if (data.winner==="draw") {
+                    updateActionLabel("Game Over! Draw!");
+                }
+                else{
+                    updateActionLabel("Game Over! Winner is: "+ data.winner+"!");
+                }
+                
+                endGame();
             }
         };
     }

@@ -109,9 +109,9 @@ function endGame() {
         shootButton.disabled = true; // Deactivate shoot button
         shootButton.classList.add('opacity-50', 'cursor-not-allowed'); // Visual feedback for disabled
     }
-    updateActionLabel("Game Over!");
+   // updateActionLabel("Game Over!");
     updatePlayerTime(0);
-    console.log("Game ended. Leave button visible, Shoot button deactivated.");
+   // console.log("Game ended. Leave button visible, Shoot button deactivated.");
 }
 
 export { updatePlayerScores, updatePlayerTime, updateActionLabel, updateTeamName, showMessageBox, hideMessageBox, endGame};
