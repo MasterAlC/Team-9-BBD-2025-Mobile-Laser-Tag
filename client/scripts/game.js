@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function joinGame(role) {
         const code = joinGameCodeInput.value.trim().toUpperCase();
+        joinGameCodeInput.value = ''; // Clear input field after reading
         if (!code) {
             showMessage("Please enter a game code!");
             return;
