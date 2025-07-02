@@ -1,4 +1,5 @@
 import { initCameraDetection } from "./cameraDetection.js";
+import { updateScores } from "./spectate-script.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     let isHost = false;
@@ -149,13 +150,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.type === 'player_list_update') {
 
-                // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
-                playerList.innerHTML = '';
-                data.players.forEach(p => {
-                    const li = document.createElement('li');
-                    li.textContent = `${p.username}` +" (" + p.team + ")";
-                    playerList.appendChild(li);
-                });
+                if (role == 'SPECTATOR') {
+                    // Update the player list for spectators
+                    updateScores(data.players);
+                }
+                else {
+                    // Need to handle correct player list update depending on whether player is a 'player' or 'spectator'
+                    playerList.innerHTML = '';
+                    data.players.forEach(p => {
+                        const li = document.createElement('li');
+                        li.textContent = `${p.username}` +" (" + p.team + ")";
+                        playerList.appendChild(li);
+                    });
+                }
             }
 
             if (data.type === 'game_started') {

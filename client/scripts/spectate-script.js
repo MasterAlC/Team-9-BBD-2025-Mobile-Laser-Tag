@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 /**
  * Updates player scores and team scores based on the provided players array.
  * Players are sorted into their respective team tables (Red/Blue) and overall team scores are tallied.
- * @param {Array<Object>} players - An array of player objects, each with { name: string, score: number, team: 'red' | 'blue' }.
+ * @param {Array<Object>} players - An array of player objects, each with { username: string, score: number, team: 'red' | 'blue' }.
  */
 function updateScores(players) {
     const redTeamPlayersBody = document.getElementById('redTeamPlayersBody');
@@ -64,7 +64,7 @@ function updateScores(players) {
 
         row.innerHTML = `
             <td>${rank}</td>
-            <td>${player.name}</td>
+            <td>${player.username}</td>
             <td>${player.score}</td>
         `;
         redTeamPlayersBody.appendChild(row);
@@ -78,7 +78,7 @@ function updateScores(players) {
 
         row.innerHTML = `
             <td>${rank}</td>
-            <td>${player.name}</td>
+            <td>${player.username}</td>
             <td>${player.score}</td>
         `;
         blueTeamPlayersBody.appendChild(row);
