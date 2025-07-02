@@ -4,7 +4,7 @@ class Game {
   constructor(gameId) {
     this.gameId = gameId;
     this.shooters = new Map();
-    this.GAME_DURATION = 5*60; //  5 minutes (TODO: make one minute for deployment)
+    this.GAME_DURATION = 10; //  5 minutes (TODO: make one minute for deployment)
     this.gameTimer = null;
     this.gameInProgress = false;
     this.blueTeamScore = 0;
@@ -136,18 +136,17 @@ class Game {
   }
 
   getWinner() {
-    let maxScore = -Infinity;
-    let winner = null;
-
-    // Corrected loop for iterating over a Map's values
-    for (const player of this.shooters.values()) {
-      if (player.score > maxScore) {
-        maxScore = player.score;
-        winner = player;
-      }
+    if (this.blueTeamScore == this.redTeamScore) {
+      return 'draw';
     }
-    return winner;
+    else if (this.blueTeamScore > this.redTeamScore) {
+      return 'blue';
+    }
+    else {
+      return 'red';
+    }
   }
-}
+  }
+
 
 module.exports = Game;
