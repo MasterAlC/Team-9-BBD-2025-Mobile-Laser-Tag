@@ -207,7 +207,7 @@ ws.on("connection", (socket) => {
         activeGames
           .get(data.gameId)
           .broadcastAll(
-            JSON.stringify({ type: "player_list_update", players: playerlist })
+            { type: "player_list_update", players: playerlist }
           );
         break;
       case "player_left":
