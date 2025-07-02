@@ -72,8 +72,8 @@ const startGame = (gameId) => {
   const game = activeGames.get(gameId);
   if (game) {
     game.startGame();
-    return True;
-  } else return False;
+    return true;
+  } else return false;
 };
 
 const playerHitEventHandler = (gameId, shooterId, targetId) => {
@@ -180,15 +180,9 @@ ws.on("connection", (socket) => {
           socket.send(
             JSON.stringify({
               type: "join_error",
-              message: "Game ID is invalid or does not exist.",
+              message: "Invalid Game ID. Please check the code and try again.",
             })
           );
-
-          // sendError(
-          //   socket,
-          //   `Either game ID ${data.gameId} does not exist or is not provided.`,
-          //   "join_error"
-          // );
           break;
         }
 
@@ -239,17 +233,30 @@ ws.on("connection", (socket) => {
             { type: "player_list_update", players: playerlist }
           );
         break;
-      case "player_left":
-        // Handle player left event
-        console.log(`Player left: ${data.username}`);
-        //players.delete(socket.id);
+    case 'leave_game':
+        gameId = data.gameId;
+        game = activeGames.get(gameId);
+        if (game) {
+            if (data.role === 'player') {
+                game.removePlayer(socket.id);
+                console.log(`Player ${socket.username} (${socket.id}) left game ${gameId} as a player.`);
+            } else if (data.role === 'spectator') {
+                game.removeSpectator(socket.id);
+                console.log(`Player ${socket.username} (${socket.id}) left game ${gameId} as a spectator.`);
+            }
+            // Broadcast the updated player list to all remaining participants in that game.
+            const updatedPlayerList = game.getPlayerList();
+            game.broadcastAll({ type: "player_list_update", players: updatedPlayerList });
+        }
         break;
       case "player_hit":
         // Handle player hit event
         gameId = data.gameId;
         game = activeGames.get(gameId);
-        color = data.color;
-        game.playerHitEventHandler(socket.id, color)
+        let color = data.color;
+        if (game) {
+            game.playerHitEventHandler(socket.id, color)
+        }
         // Handle player hit event
         console.log(`${data.username} shot ${data.color}!`);
         break;
@@ -262,11 +269,9 @@ ws.on("connection", (socket) => {
         // Get correct game according to game ID
         const gameToStart = activeGames.get(data.gameId);
         // Start game
-        console.log("Test3")
         if (gameToStart) {
-          console.log("Test")
           gameToStart.startGame();
-          console.log("Game started eco")
+          console.log(`Game ${data.gameId} started successfully.`);
         } else {
           sendError(socket, `Cannot start game. Game with ID ${data.gameId} does not exist.`, 'start_game_error');
         }
@@ -281,22 +286,21 @@ ws.on("connection", (socket) => {
         break;
     }
   });
-  // Player hit socket handler
 
-  // Start game socket handler
-  //Spectator socket handler
-  //Create game
-  //join games
-  //
   socket.on("close", () => {
+    // Optional: Handle player leaving if they close the tab/browser.
+    // This requires iterating through all active games to find the player.
     console.log(
-      "WebSocket client disconnected: " + socket._socket.remoteAddress
+      "WebSocket client disconnected: " + (socket.username || socket.id)
     );
+    activeGames.forEach((game, gameId) => {
+        if(game.shooters.has(socket.id) || game.spectators.has(socket.id)){
+            game.removePlayer(socket.id);
+            game.removeSpectator(socket.id);
+            const updatedPlayerList = game.getPlayerList();
+            game.broadcastAll({ type: "player_list_update", players: updatedPlayerList });
+            console.log(`Cleaned up disconnected player ${socket.username} from game ${gameId}`);
+        }
+    });
   });
 });
-
-//Start game
-//Upddate game state
-//End game state
-//Send game state to clients
-//Handle client connections and disconnections

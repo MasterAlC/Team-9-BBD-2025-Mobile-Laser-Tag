@@ -63,6 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.type === 'join_error') {
                 // Display popup on cient that join was not successful
+                showMessage(data.message);
             }
 
             if (data.type === 'player_list_update') {
@@ -129,7 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function joinGame(role) {
-        const code = joinGameCodeInput.value.trim();
+        const code = joinGameCodeInput.value.trim().toUpperCase();
+        joinGameCodeInput.value = ''; // Clear input field after reading
         if (!code) {
             showMessage("Please enter a game code!");
             return;
@@ -157,6 +159,12 @@ document.addEventListener('DOMContentLoaded', () => {
         socket.onmessage = (msg) => {
             const data = JSON.parse(msg.data);
             console.log('Server →', data);
+
+            // Handle "join_error" message from server
+            if (data.type === 'join_error') {
+                showMessage(data.message);
+                return; // Stop further processing
+            }
 
             // Handle "join_confirmed" message from server
             if (data.type === 'join_confirmed') {
@@ -288,10 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showScreen(homeScreen);
     });
 
-    document.getElementById('playButton').addEventListener('click', () => {
-        startGame()
-    })
-
     //Continue button listener for the username screen
     continueBtn.addEventListener('click', () => {
         const name = usernameInput.value.trim();
@@ -322,5 +326,26 @@ document.addEventListener('DOMContentLoaded', () => {
         currentGameId = null;
         showScreen(homeScreen);
     });
+    
+    //Leave game button listener for the player view (after game over)
+    document.getElementById('leaveGamePlayerBtn').addEventListener('click', () => {
+        if (currentGameId) {
+            socket.send(JSON.stringify({
+                type: 'leave_game',
+                gameId: currentGameId,
+                username: playerName,
+                role: 'player'
+            }));
+        }
 
+        currentGameId = null;
+        // Reset buttons and UI for a new game
+        const shootButton = document.getElementById('shootButton');
+        if (shootButton) {
+            shootButton.disabled = false;
+            shootButton.classList.remove('opacity-50', 'cursor-not-allowed');
+        }
+        document.getElementById('leaveGamePlayerBtn').classList.add('hidden');
+        showScreen(homeScreen);
+    });
 });
