@@ -118,7 +118,7 @@ ws.on("connection", (socket) => {
           })
         );
         break;
-      case "create_game":
+              case "create_game":
         // Handle create game event
         gameId = uuidv4().slice(0, 6).toUpperCase(); // Generate a random game ID
         console.log(`Game created with ID: ${gameId}`);
@@ -127,7 +127,8 @@ ws.on("connection", (socket) => {
         game.addPlayer(socket.id, socket);
         let player = game.getPlayer(socket.id);
         player.setHost(true);
-        // Send game created event to the client
+
+        // Send game created event to the client (to display the game code)
         socket.send(
           JSON.stringify({
             type: "game_created",
@@ -135,10 +136,26 @@ ws.on("connection", (socket) => {
             message: "Game created successfully!",
           })
         );
-        //DOES THE HOST NEED TO SEE HOW MANY PEOPLE JOINED?
+        
+        // --- FIX: Send a join confirmation to the host with their team color. ---
+        // This makes the host's experience consistent with a joining player.
+        // It uses the correct `gameId` and adds the `team` property.
+        socket.send(
+            JSON.stringify({
+              type: "join_confirmed",
+              gameId: gameId, 
+              message: `Joined game ${gameId} successfully as the host!`,
+              team: player.team // Send the assigned team color
+            })
+          );
 
-        // todo: Update all players (host included) in game room with player list ()
-
+        // Broadcast the initial player list (containing just the host) to the new game room.
+        const playerlist1 = activeGames.get(gameId).getPlayerList();
+        activeGames
+          .get(gameId)
+          .broadcastAll(
+            { type: "player_list_update", players: playerlist1 }
+          );
         break;
       case "player_join":
         console.log(
@@ -173,19 +190,21 @@ ws.on("connection", (socket) => {
             JSON.stringify({
               type: "join_confirmed",
               gameId: data.gameId,
-              message: `Joined game ${data.gameId} successfully!`
+              message: `Joined game ${data.gameId} successfully!, as spec`
             })
           );
           console.log("Spectator created")
         } else if (data.role == "player") {
           // Assign player to a team in the game
           addPlayer(data.gameId, socket.id, socket, (isSpectator = false));
+          console.log("color:",activeGames.get(data.gameId).getPlayer(socket.id).team);
           socket.send(
+            
             JSON.stringify({
               type: "join_confirmed",
               gameId: data.gameId,
-              message: `Joined game ${data.gameId} successfully!`,
-              team: activeGames.get(data.gameId).getPlayer(socket.id).team.name,
+              message: `Joined game ${data.gameId} successfully,as player!`,
+              team: activeGames.get(data.gameId).getPlayer(socket.id).team,
             })
           );
           console.log(`Player ${socket.username} created`);
