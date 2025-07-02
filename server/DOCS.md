@@ -115,8 +115,9 @@
 - **Description:** Joins a game room.  
 - **Parameters:**  
     - gameId (string): The game room ID  
-    - role (string): Either "player" or "spectator"  
-- **Returns:** (join_confirmed)Confirmation and updated player list  
+    - role (string): Either "player" or "spectator"
+    - username(string)  
+- **Returns:** (join_confirmed)Confirmation and updated player list object  
 
 **leave**  
 - **Description:** Removes a player from a game room and updates the list with a "left" flag.  
@@ -170,6 +171,7 @@
 -  **Description:** It is used to communicate error messages between the client and server
 - **parameters**
     - message: Describe the error
+    - protocol: (string || Null) explains where the error originated from (chosen between on of the other **types**)
 - **returns** Nothing
 
 #### Roles

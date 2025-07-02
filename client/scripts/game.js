@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 showScreen(createGameScreen);
             }
 
-            if (data.type === 'JOIN_CONFIRMED') {
+            if (data.type === 'join_confirmed') {
                 console.log(`Received confirmation to join game ${data.gameId}`)
                 currentGameId = data.gameId;
                 waitingRoomGameId.textContent = "Joined Game: " + currentGameId + " (Waiting for host to start...)";
