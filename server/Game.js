@@ -4,7 +4,7 @@ class Game {
   constructor(gameId) {
     this.gameId = gameId;
     this.shooters = new Map();
-    this.GAME_DURATION = 0.5 * 60;
+    this.GAME_DURATION = 5 * 60;
     this.gameTimer = null;
     this.gameInProgress = false;
     this.blueTeamScore = 0;
@@ -70,9 +70,11 @@ class Game {
     if (this.gameInProgress) return;
     this.gameInProgress = true;
 
-    for (const player of this.shooters.values()) {
+        for (const player of this.shooters.values()) {
       player.score = 0;
     }
+    this.redTeamScore = 0;
+    this.blueTeamScore = 0;
 
     // NOTE: We now send an object to broadcastAll, which is safer.
     // I am also using the consistent message type 'GAME_START' from our previous discussion.
@@ -105,22 +107,72 @@ class Game {
     return "game_ended";
   }
 
+  /*
+| Event                     | Shooter Points| All Palyers | Description                                 |
+|---------------------------|---------------|-------------|---------------------------------------------|
+| Hit opposing team         | +5            | +2          | Reward for hitting an enemy player          |
+| Hit own team (friendly)   | -5            | -1          | Penalty for friendly fire                   |
+| Got shot by enemy         | --            | -3          | Penalty for getting hit                     |
+| Missed shot               | -2            |  0          | Small penalty to encourage accuracy         |
+*/
+
   playerHitEventHandler(shooterId, color) {
     if (!this.gameInProgress) return;
     const shooter = this.shooters.get(shooterId);
-    let score;
     if (!shooter) return;
-    if (shooter.team !== color && color != "blank") {
-      // If the shooter is not on the team that was hit, ignore the event
-      if (color === "blue") {
-        this.redTeamScore += 1;
-        score = this.redTeamScore;
-      } else if (color === "red") {
-        this.blueTeamScore++;
-        score = this.blueTeamScore;
-      }
-      shooter.updateScore(1);
+
+    if (color === "blank") {
+        // Event: Missed shot (-2 points for the shooter)
+        shooter.updateScore(-2);
+
+    } else if (shooter.team === color) {
+        // Event: Hit own team / Friendly Fire
+        // -5 points for the shooter.
+        shooter.updateScore(-5);
+        // -1 point for EACH player on the shooter's team (including the shooter again).
+        for (const player of this.shooters.values()) {
+            if (player.team === shooter.team) {
+                player.updateScore(-1);
+            }
+        }
+
+    } else { // shooter.team !== color
+        // Event: Hit opposing team
+        // +5 points for the shooter.
+        shooter.updateScore(5);
+        // +2 points for EACH player on the shooter's team.
+        for (const player of this.shooters.values()) {
+            if (player.team === shooter.team) {
+                player.updateScore(2);
+            }
+        }
+
+        // Event: Opponent got shot
+        // -3 points for EACH player on the team that was hit.
+        for (const player of this.shooters.values()) {
+            if (player.team === color) { // 'color' is the team that was hit
+                player.updateScore(-3);
+            }
+        }
     }
+    
+    this.recalculateTeamTotals();
+    this.broadcastScoreUpdate();
+  }
+
+  recalculateTeamTotals() {
+    this.redTeamScore = 0;
+    this.blueTeamScore = 0;
+    for (const player of this.shooters.values()) {
+        if (player.team === 'red') {
+            this.redTeamScore += player.score;
+        } else if (player.team === 'blue') {
+            this.blueTeamScore += player.score;
+        }
+    }
+  }
+
+  broadcastScoreUpdate() {
     let playersList = this.getPlayerList();
     this.broadcastAll({
       type: "player_list_update",
@@ -147,7 +199,7 @@ class Game {
   }
 
   getWinner() {
-    if (this.blueTeamScore == this.redTeamScore) {
+    if (this.blueTeamScore === this.redTeamScore) {
       return "draw";
     } else if (this.blueTeamScore > this.redTeamScore) {
       return "blue";
