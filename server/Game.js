@@ -113,7 +113,7 @@ class Game {
 | Hit opposing team         | +5            | +2          | Reward for hitting an enemy player          |
 | Hit own team (friendly)   | -5            | -1          | Penalty for friendly fire                   |
 | Got shot by enemy         | --            | -3          | Penalty for getting hit                     |
-| Missed shot               | -2            |  0          | Small penalty to encourage accuracy         |
+| Missed shot               | 0             |  0          | Small penalty to encourage accuracy         |
 */
 
   playerHitEventHandler(shooterId, color) {
@@ -122,8 +122,8 @@ class Game {
     if (!shooter) return;
 
     if (color === "blank") {
-        // Event: Missed shot (-2 points for the shooter)
-        shooter.updateScore(-2);
+        // Event: Missed shot (0 points for the shooter)
+        shooter.updateScore(0);
 
     } else if (shooter.team === color) {
         // Event: Hit own team / Friendly Fire
