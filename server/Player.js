@@ -20,7 +20,7 @@ class Player {
         this.team = team;
     }
     updateScore(points) {
-        this.score += points;
+        this.score = Math.max(0, this.score + points);
     }
 
     setHost(isHost) {
