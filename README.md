@@ -37,8 +37,7 @@ The application flows through several intuitive screens:
 ├── server/              # All backend Node.js files
 │   ├── index.js
 │   ├── Game.js
-│   ├── Player.js
-│   └── Team.js
+│   └── Player.js
 ├── client/              # All frontend files
 │   ├── index.html
 │   ├── styles/
@@ -47,26 +46,32 @@ The application flows through several intuitive screens:
 │   └── scripts/
 │       ├── game.js
 │       ├── player.js
-│       ├── cameraDetection.js
-│       └── ...
+│       ├── spectate-script.js
+│       └── cameraDetection.css
 ├── cert/                # SSL certificates
-│   └── (Generated locally)
+│   ├── server.key               
+│   └── server.cert
 ├── .gitignore
 ├── DOCS.md
 ├── package.json
 └── README.md
 ```
 
-## Getting Started
+## Getting started playing online
+### Prerequisites
+
+- **A Mobile Device with a Camera:** The game is optimized for mobile browsers
+
+[Open the online deployment](https://team-9-bbd-2025-mobile-laser-tag.onrender.com)
+
+
+## Getting started on running on a local machine 
 
 Follow these instructions to get the project running on your local network.
 
 ### Prerequisites
 
 - **Node.js and npm:** [Download and install Node.js](https://nodejs.org/en/)
-- **OpenSSL:** For generating an SSL certificate  
-  - macOS/Linux: Preinstalled  
-  - Windows: Install via [Git for Windows](https://git-scm.com/download/win) or [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
 - **A Mobile Device with a Camera:** The game is optimized for mobile browsers
 
 ### 1. Clone the Repository
@@ -82,18 +87,7 @@ cd team-9-bbd-2025-mobile-laser-tag
 npm install
 ```
 
-### 3. Generate SSL Certificate
-
-Browsers require HTTPS for camera access. Generate a self-signed certificate:
-
-```bash
-mkdir cert
-openssl req -x509 -newkey rsa:4096 -keyout cert/server.key -out cert/server.cert -days 365 -nodes
-```
-
-> Press `Enter` through all prompts to accept defaults.
-
-### 4. Run the Server
+### 3. Run the Server
 
 ```bash
 node server/index.js
@@ -105,7 +99,7 @@ You'll see output like:
 Server running at: https://192.168.1.10:3000
 ```
 
-### 5. Play the Game!
+### 4. Play the Game!
 
 - Connect your **mobile phone** to the **same Wi-Fi network**.
 - Open a browser (Chrome/Safari) on your phone.
