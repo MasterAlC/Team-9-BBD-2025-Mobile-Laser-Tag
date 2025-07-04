@@ -1,5 +1,4 @@
 const Player = require("./Player");
-const Team = require("./Team");
 class Game {
   constructor(gameId) {
     this.gameId = gameId;
